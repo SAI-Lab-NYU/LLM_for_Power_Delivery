@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSR Text Simulator v23</title>
+  <style>
+    :root {
+      --page: #f5f6f8;
+      --panel: #ffffff;
+      --border: #d9dde3;
+      --text: #1e2630;
+      --muted: #66717f;
+      --accent: #215fa6;
+      --danger: #a92d2d;
+      --success: #1e7a3d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 18px;
+      background: var(--page);
+      color: var(--text);
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    header h1 { margin: 0 auto 0 0; font-size: 21px; }
+    a, button {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      padding: 8px 11px;
+      text-decoration: none;
+      cursor: pointer;
+      font: inherit;
+    }
+    button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 650;
+    }
+    .message {
+      min-height: 42px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    .message.success { color: var(--success); border-color: #b8dac3; }
+    .message.error { color: var(--danger); border-color: #e5bcbc; }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .panel h2 {
+      margin: 0;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: 650px;
+      resize: vertical;
+      border: 0;
+      padding: 12px;
+      outline: none;
+      background: #fbfcfd;
+      color: #1c2733;
+      font: 12px/1.45 Consolas, Menlo, monospace;
+      tab-size: 2;
+    }
+    .note {
+      padding: 9px 11px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      textarea { min-height: 450px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DSR Text Simulator v23</h1>
+    <a href="/">Graphical Simulator</a>
+    <a href="/api/text/state.txt" target="_blank">Raw State TXT</a>
+  </header>
+
+  <div id="message" class="message">Loading the current simulator state...</div>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>Current / Predicted State JSON</h2>
+      <div class="actions">
+        <button id="reset-scenario" class="primary">Reset Fault Scenario</button>
+        <button id="refresh-state">Refresh State</button>
+        <button id="copy-state">Copy State</button>
+      </div>
+      <textarea id="state-json" readonly></textarea>
+      <div class="note">
+        A rejected command does not advance the time step and does not mutate the live simulator.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Command JSON</h2>
+      <div class="actions">
+        <button id="load-example">Load Example</button>
+        <button id="validate-command">Validate Only</button>
+        <button id="execute-command" class="primary">Execute Next Step</button>
+      </div>
+      <textarea id="command-json" spellcheck="false"></textarea>
+      <div class="note">
+        Switch targets use <code>opened</code> or <code>closed</code>. Omit a switch to keep its state. Objects omitted from <code>mobile_commands</code> default to Continue.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const exampleCommand = {
+      switch_commands: {},
+      mobile_commands: {
+        RC1: {type: "continue"},
+        RC2: {type: "continue"},
+        PAC1: {type: "continue"},
+        MPS1: {type: "continue"}
+      }
+    };
+
+    const message = document.getElementById("message");
+    const stateBox = document.getElementById("state-json");
+    const commandBox = document.getElementById("command-json");
+
+    function showMessage(text, kind = "") {
+      message.textContent = text;
+      message.className = `message ${kind}`.trim();
+    }
+
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, {
+        headers: {"Content-Type": "application/json"},
+        ...options,
+      });
+      const payload = await response.json();
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || `Request failed with ${response.status}`);
+      }
+      return payload;
+    }
+
+    function displayState(payload) {
+      stateBox.value = JSON.stringify(payload, null, 2);
+    }
+
+    async function refreshState() {
+      try {
+        const state = await requestJson("/api/text/state");
+        displayState(state);
+        showMessage(state.message || "State refreshed.", "success");
+      } catch (error) {
+        showMessage(error.message, "error");
+      }
+    }
+
+    async function resetFaultScenario() {
+      try {
+        const state = await requestJson("/api/load", {
+          method: "POST",
+          body: JSON.stringify({mode: "reset"}),
+        });
+        const textState = await requestJson("/api/text/state");
+        displayState(textState);
+        commandBox.value = JSON.stringify(exampleCommand, null, 2);
+        showMessage(
+          `${state.message}
+Time step, score history, object positions, resources, and commands were reset.`,
+          "success"
+        );
+      } catch (error) {
+        showMessage(`Scenario reset failed: ${error.message}`, "error");
+      }
+    }
+
+    function parseCommand() {
+      let payload;
+      try {
+        payload = JSON.parse(commandBox.value);
+      } catch (error) {
+        throw new Error(`Command is not valid JSON: ${error.message}`);
+      }
+      if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        throw new Error("Command must be one JSON object.");
+      }
+      return payload;
+    }
+
+    async function validateCommand() {
+      try {
+        const payload = parseCommand();
+        const result = await requestJson("/api/text/validate", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        displayState(result.predicted_state);
+        showMessage(
+          `${result.message}\nLive time step remains ${result.live_time_step}.`,
+          "success"
+        );
+      } catch (error) {
+        showMessage(`Command rejected: ${error.message}`, "error");
+      }
+    }
+
+    async function executeCommand() {
+      try {
+        const payload = parseCommand();
+        const result = await requestJson("/api/text/execute", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        displayState(result.state);
+        showMessage(result.message, "success");
+      } catch (error) {
+        showMessage(`Command rejected: ${error.message}`, "error");
+        await refreshState();
+      }
+    }
+
+    document.getElementById("reset-scenario").addEventListener("click", resetFaultScenario);
+    document.getElementById("refresh-state").addEventListener("click", refreshState);
+    document.getElementById("load-example").addEventListener("click", () => {
+      commandBox.value = JSON.stringify(exampleCommand, null, 2);
+    });
+    document.getElementById("validate-command").addEventListener("click", validateCommand);
+    document.getElementById("execute-command").addEventListener("click", executeCommand);
+    document.getElementById("copy-state").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(stateBox.value);
+      showMessage("State JSON copied.", "success");
+    });
+
+    commandBox.value = JSON.stringify(exampleCommand, null, 2);
+    refreshState();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSR Grid Map V23-HF4</title>
+  <script src="/plotly.min.js"></script>
+  <style>
+    :root {
+      --page: #f5f6f8;
+      --panel: #ffffff;
+      --border: #d9dde3;
+      --text: #1e2630;
+      --muted: #66717f;
+      --accent: #215fa6;
+      --accent-dark: #174878;
+      --danger: #a92d2d;
+      --success: #1e7a3d;
+      --warning: #a36b16;
+      --chip: #edf2f8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.97);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0 auto 0 0;
+      font-size: 20px;
+      font-weight: 650;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 8px 11px;
+      cursor: pointer;
+    }
+
+    button:hover:not(:disabled) {
+      border-color: var(--accent);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    .primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 650;
+    }
+
+    .primary:hover:not(:disabled) {
+      background: var(--accent-dark);
+    }
+
+    .danger {
+      border-color: #d7b7b7;
+      color: var(--danger);
+    }
+
+    #message {
+      margin: 10px 16px 0;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+    }
+
+    #message.success {
+      border-color: #b8dac3;
+      color: var(--success);
+      background: #f4fbf6;
+    }
+
+    #message.error {
+      border-color: #e5bcbc;
+      color: var(--danger);
+      background: #fff7f7;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(620px, 1fr) 410px;
+      gap: 10px;
+      padding: 10px 12px 16px;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .panel-title {
+      margin: 0;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    #status-column,
+    #command-column {
+      max-height: calc(100vh - 128px);
+      overflow-y: auto;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .metric {
+      padding: 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fafbfd;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .metric-value {
+      margin-top: 3px;
+      font-size: 17px;
+      font-weight: 650;
+    }
+
+    details {
+      border-top: 1px solid var(--border);
+    }
+
+    summary {
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 620;
+      user-select: none;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      padding: 0 10px 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 6px 7px;
+      border: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f2f5f8;
+      font-weight: 650;
+    }
+
+    .empty-table {
+      padding: 0 12px 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    #map-panel {
+      overflow: hidden;
+    }
+
+    .map-workspace {
+      display: grid;
+      grid-template-columns: minmax(620px, 1fr) 300px;
+      min-height: max(760px, calc(100vh - 145px));
+      align-items: stretch;
+    }
+
+    #grid-map {
+      width: 100%;
+      height: max(760px, calc(100vh - 145px));
+      min-height: 760px;
+    }
+
+    .pixel-inspector {
+      min-width: 0;
+      border-left: 1px solid var(--border);
+      padding: 12px 10px;
+      background: #fbfcfd;
+    }
+
+    .pixel-inspector-heading {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    #pixel-readout {
+      min-height: 58px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    #pixel-zoom {
+      width: 100%;
+      height: 360px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .status-section-label {
+      padding: 9px 12px 5px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .object-details {
+      border-top: 1px solid var(--border);
+    }
+
+    .object-details summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+    }
+
+    .object-summary-name {
+      flex: 1;
+    }
+
+    .object-state-text {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .object-icon {
+      position: relative;
+      display: inline-block;
+      width: 24px;
+      height: 14px;
+      flex: 0 0 24px;
+    }
+
+    .object-icon::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      top: 3px;
+      width: 13px;
+      height: 8px;
+      border: 1px solid #27313c;
+      border-radius: 1px;
+      background: var(--object-color);
+    }
+
+    .object-icon::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 2px;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid var(--object-color);
+      filter: drop-shadow(1px 0 0 #27313c);
+    }
+
+    .object-icon.mps::before {
+      left: 2px;
+      top: 1px;
+      width: 0;
+      height: 0;
+      border: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 19px solid var(--object-color);
+      background: transparent;
+      filter: drop-shadow(1px 0 0 #27313c);
+    }
+
+    .object-icon.mps::after {
+      display: none;
+    }
+
+    .object-icon.idle { --object-color: #8b9198; }
+    .object-icon.moving { --object-color: #29964b; }
+    .object-icon.repairing { --object-color: #d64545; }
+    .object-icon.supplying { --object-color: #8E44AD; }
+    .object-icon.analyzing { --object-color: #E67E22; }
+
+    .object-info {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 5px 9px;
+      padding: 0 12px 11px 44px;
+      font-size: 12px;
+    }
+
+    .object-info-label {
+      color: var(--muted);
+    }
+
+    .waypoint-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .waypoint-actions button,
+    .waypoint-remove {
+      padding: 4px 7px;
+      font-size: 11px;
+    }
+
+    .command-section {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .command-section:last-child {
+      border-bottom: 0;
+    }
+
+    .command-section h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .switch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .switch-validation-actions {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 7px;
+      align-items: stretch;
+      margin-top: 8px;
+    }
+
+    .switch-validation-status {
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #f6f7f9;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .switch-validation-status.success {
+      border-color: #b8dac3;
+      background: #f4fbf6;
+      color: var(--success);
+    }
+
+    .switch-validation-status.error {
+      border-color: #e5bcbc;
+      background: #fff7f7;
+      color: var(--danger);
+    }
+
+    .switch-card {
+      min-width: 0;
+      padding: 5px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #fafbfd;
+      text-align: center;
+    }
+
+    .switch-line {
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: var(--chip);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge.closed { color: #176b34; background: #e7f5ec; }
+    .badge.opened { color: #9b2626; background: #fbeaea; }
+    .badge.unknown { color: #5f6670; background: #eceef1; }
+    .badge.idle { color: #5f6670; background: #eceef1; }
+    .badge.moving { color: #176b34; background: #e7f5ec; }
+    .badge.repairing { color: #9b2626; background: #fbeaea; }
+    .badge.supplying { color: #6c3483; background: #f2e8f7; }
+    .badge.analyzing { color: #9A4D00; background: #FFF0DF; }
+    .badge.pending { color: var(--warning); background: #fff2d8; }
+
+    .switch-card button {
+      width: 100%;
+      padding: 4px 2px;
+      font-size: 11px;
+    }
+
+    .unit-card {
+      margin-top: 9px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #fafbfd;
+    }
+
+    .unit-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+
+    .unit-heading strong {
+      font-size: 14px;
+    }
+
+    .unit-meta {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+
+    .segmented.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .segmented button {
+      padding: 6px 5px;
+      font-size: 12px;
+    }
+
+    .segmented button.active {
+      border-color: var(--accent);
+      background: #eaf2fb;
+      color: var(--accent-dark);
+      font-weight: 650;
+    }
+
+    .command-details {
+      padding-top: 4px;
+    }
+
+    .waypoint-grid {
+      display: grid;
+      grid-template-columns: 42px 1fr 1fr 24px;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .waypoint-grid input,
+    .repair-row input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      padding: 6px 7px;
+    }
+
+    .waypoint-index {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .repair-faults {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 7px;
+    }
+
+    .repair-faults button {
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+
+    .repair-faults button.active {
+      background: #fceaea;
+      border-color: #b54b4b;
+      color: #8f2020;
+    }
+
+    .repair-row {
+      display: grid;
+      grid-template-columns: 1fr 110px;
+      gap: 7px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .supply-context {
+      margin-bottom: 7px;
+      padding: 7px;
+      border-radius: 6px;
+      background: #f4eef8;
+      color: #5b376d;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .supply-row {
+      display: grid;
+      grid-template-columns: 1fr 92px;
+      gap: 7px;
+      align-items: center;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+
+    .supply-row input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      padding: 6px 7px;
+    }
+
+    .pending-line {
+      margin-top: 8px;
+      padding: 7px;
+      border-radius: 6px;
+      background: #eef3f8;
+      color: #344251;
+      font-size: 12px;
+    }
+
+    .execute-block {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbff;
+    }
+
+    .execute-block button {
+      width: 100%;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .busy-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.62);
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .busy-overlay.visible {
+      display: flex;
+    }
+
+    .score-panel {
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border);
+    }
+
+    .score-panel h3,
+    .scenario-setup h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .score-input-row {
+      display: grid;
+      grid-template-columns: 1fr 84px;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .score-input-row input,
+    .unknown-region-row input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      padding: 6px 7px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .score-item {
+      padding: 7px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    .score-item-label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .score-item-value {
+      margin-top: 2px;
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .score-status {
+      margin-top: 7px;
+      padding: 7px;
+      border-radius: 7px;
+      background: #eef3f8;
+      color: #344251;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .score-status.locked,
+    .score-status.ended {
+      background: #fff0f0;
+      color: var(--danger);
+    }
+
+    .score-history {
+      margin-top: 6px;
+      max-height: 72px;
+      overflow-y: auto;
+      color: var(--muted);
+      font: 11px/1.35 Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .scenario-note {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .unknown-region-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .unknown-region-row {
+      display: grid;
+      grid-template-columns: 62px repeat(4, minmax(0, 1fr)) 28px;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .unknown-region-row label {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .unknown-region-row button {
+      padding: 5px 2px;
+      font-size: 12px;
+    }
+
+    .scenario-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .scenario-actions button {
+      padding: 5px 8px;
+      font-size: 11px;
+    }
+
+    .text-interface-link {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 8px 11px;
+      text-decoration: none;
+    }
+
+    .game-ended-note {
+      padding: 8px;
+      border: 1px solid #e5bcbc;
+      border-radius: 7px;
+      background: #fff7f7;
+      color: var(--danger);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1120px) {
+      .layout {
+        grid-template-columns: 280px minmax(500px, 1fr);
+      }
+      #command-column {
+        grid-column: 1 / -1;
+        max-height: none;
+      }
+      .map-workspace {
+        grid-template-columns: minmax(520px, 1fr) 250px;
+      }
+    }
+
+    @media (max-width: 820px) {
+      header { flex-wrap: wrap; }
+      header h1 { width: 100%; }
+      .layout { grid-template-columns: 1fr; }
+      #status-column, #command-column { max-height: none; }
+      .map-workspace { grid-template-columns: 1fr; }
+      .pixel-inspector { border-left: 0; border-top: 1px solid var(--border); }
+      #grid-map { min-height: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DSR Grid Map V23-HF4</h1>
+    <a class="text-interface-link" href="/text" target="_blank">Text Interface</a>
+    <button id="load-base">Load Base Map</button>
+    <button id="load-scenario">Reset Fault Scenario</button>
+    <button id="execute-step" class="primary">Execute Current Step</button>
+    <button id="exit-server" class="danger">Exit</button>
+  </header>
+
+  <div id="message">Loading simulator state...</div>
+
+  <main class="layout">
+    <section id="status-column" class="panel">
+      <h2 class="panel-title">Simulator Status</h2>
+      <div id="summary-grid" class="summary-grid"></div>
+      <div id="status-tables"></div>
+    </section>
+
+    <section id="map-panel" class="panel">
+      <div class="map-workspace">
+        <div id="grid-map"></div>
+        <aside class="pixel-inspector">
+          <div class="pixel-inspector-heading">
+            <strong>Pixel Inspector</strong>
+            <span id="pixel-readout">Move the mouse over the map.</span>
+          </div>
+          <div id="pixel-zoom"></div>
+          <section class="score-panel">
+            <h3>Game Score</h3>
+            <div class="score-input-row">
+              <input id="max-time-step" type="text" inputmode="numeric" value="20" aria-label="Maximum time step N">
+              <button id="apply-max-time" type="button">Apply N</button>
+            </div>
+            <div id="score-grid" class="score-grid"></div>
+            <div id="score-status" class="score-status">Load a fault scenario to start scoring.</div>
+            <div id="score-history" class="score-history"></div>
+            <button id="download-state" type="button">Download Current State JSON</button>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="command-column" class="panel">
+      <h2 class="panel-title">Current-Step Commands</h2>
+      <div class="execute-block">
+        <button id="execute-step-side" class="primary">Execute Current Step</button>
+        <button id="download-commands" type="button">Download Pending Commands JSON</button>
+        <div class="small-note">
+          All pending Switch and Object commands are validated as one atomic batch. The map updates once after the complete time step.
+        </div>
+      </div>
+      <div class="command-section">
+        <h3>Switch Commands</h3>
+        <div id="switch-commands" class="switch-grid"></div>
+        <div class="switch-validation-actions">
+          <button id="validate-switches" type="button">Validate Switch Plan</button>
+          <div id="switch-validation-status" class="switch-validation-status">
+            Set provisional Switch actions, then validate them before entering MPS power.
+          </div>
+        </div>
+      </div>
+      <div class="command-section">
+        <h3>Object Commands</h3>
+        <div id="mobile-commands"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="busy-overlay" class="busy-overlay">Executing simulator step...</div>
+
+  <script>
+    let latestState = null;
+    let pendingMobile = {};
+    let pendingSwitches = {};
+    let validatedMpsContexts = {};
+    let switchPlanValidated = false;
+    let validatedSwitchSignature = "";
+    let gameCommandsLocked = true;
+
+    const messageElement = document.getElementById("message");
+    const busyOverlay = document.getElementById("busy-overlay");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function setBusy(isBusy) {
+      busyOverlay.classList.toggle("visible", isBusy);
+      document.querySelectorAll("button").forEach(button => {
+        if (button.dataset.preserveDisabled) return;
+        if (isBusy) {
+          button.dataset.preBusyDisabled = button.disabled ? "1" : "0";
+          button.disabled = true;
+        } else {
+          button.disabled = button.dataset.preBusyDisabled === "1";
+          delete button.dataset.preBusyDisabled;
+        }
+      });
+      if (!isBusy) applyGameLock();
+    }
+
+    function showMessage(text, kind = "") {
+      messageElement.textContent = text || "Ready.";
+      messageElement.className = kind;
+    }
+
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, {
+        headers: {"Content-Type": "application/json"},
+        ...options,
+      });
+      const payload = await response.json();
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.message || `Request failed: ${response.status}`);
+      }
+      return payload;
+    }
+
+    function resetPendingCommands() {
+      pendingMobile = {};
+      pendingSwitches = {};
+      validatedMpsContexts = {};
+      switchPlanValidated = false;
+      validatedSwitchSignature = "";
+      if (!latestState) return;
+
+      latestState.commands.mobile_units.forEach(unit => {
+        pendingMobile[unit.name] = {
+          type: "continue",
+          waypoints: [{x: "", y: ""}],
+          fault: unit.repairable_faults[0]?.name || "",
+          amount: "",
+          p: unit.current_p ?? "",
+          q: unit.current_q ?? "",
+        };
+      });
+      latestState.commands.switches.forEach(item => {
+        pendingSwitches[item.name] = null;
+      });
+    }
+
+    function numberText(value) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return String(value ?? "-");
+      return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
+    }
+
+    function readMaxTimeStep() {
+      const value = Number(document.getElementById("max-time-step").value);
+      if (!Number.isInteger(value) || value < 1) {
+        throw new Error("Maximum time step N must be a positive integer.");
+      }
+      return value;
+    }
+
+    function renderScore(game) {
+      const input = document.getElementById("max-time-step");
+      if (document.activeElement !== input) {
+        input.value = game.max_time_step;
+      }
+      input.disabled = game.started;
+      document.getElementById("apply-max-time").disabled = game.started;
+
+      const metrics = [
+        ["Current T", game.time_step],
+        ["Maximum N", game.max_time_step],
+        ["Restored P", numberText(game.restored_active_power)],
+        ["Weighted |P|×W", numberText(game.weighted_restored_load)],
+        ["Total P", numberText(game.total_active_load)],
+        ["Total |P|×W", numberText(game.total_weighted_load)],
+        ["Score", numberText(game.score)],
+        ["Status", game.status],
+      ];
+      document.getElementById("score-grid").innerHTML = metrics.map(([label, value]) => `
+        <div class="score-item">
+          <div class="score-item-label">${escapeHtml(label)}</div>
+          <div class="score-item-value">${escapeHtml(value)}</div>
+        </div>
+      `).join("");
+
+      const status = document.getElementById("score-status");
+      const details = [];
+      if (game.locked) {
+        const lostLoads = (game.violation_loads || []).join(", ") || "one or more loads";
+        details.push(`Previously energized load(s) ${lostLoads} lost power at T=${game.violation_step}; score is permanently locked at zero.`);
+      } else if (game.ended) {
+        details.push(game.end_reason || "Game completed.");
+        if (game.projected_steps) {
+          details.push(`${game.projected_steps} remaining step(s) were projected at full restoration.`);
+        }
+      } else if (game.started) {
+        details.push("Each step contributes Σ(|P|×W) over energized loads. Once a load is energized, it must remain energized in every later step.");
+      } else {
+        details.push("Set N, then load the fault scenario defined by the scenario files.");
+      }
+      status.textContent = details.join(" ");
+      status.className = `score-status ${game.ended ? "ended" : (game.locked ? "locked" : "")}`.trim();
+
+      const weightedHistory = game.weighted_load_history || game.power_history || [];
+      const loadHistory = game.energized_load_history || [];
+      const history = weightedHistory.map((value, index) => {
+        const loads = (loadHistory[index] || []).join(", ") || "None";
+        return `T${index}: |P|×W=${numberText(value)} [${loads}]`;
+      }).join("  ");
+      document.getElementById("score-history").textContent = history || "No score history yet.";
+    }
+
+    function applyGameLock() {
+      if (!latestState) return;
+      gameCommandsLocked = !latestState.game.commands_enabled;
+      const commandSelectors = [
+        "#execute-step", "#execute-step-side", "#validate-switches",
+        "#switch-commands button", "#mobile-commands button",
+        "#mobile-commands input"
+      ];
+      document.querySelectorAll(commandSelectors.join(",")).forEach(element => {
+        element.disabled = gameCommandsLocked || element.dataset.intrinsicDisabled === "1" || element.dataset.preserveDisabled === "1";
+      });
+
+      document.getElementById("load-base").disabled = false;
+      document.getElementById("load-scenario").disabled = latestState.game.ended && !latestState.scenario.can_edit;
+      if (latestState.game.ended) {
+        setSwitchValidationStatus("Game ended. Load the base map before starting a new scenario.", "error");
+      }
+    }
+
+    function renderSummary(summary) {
+      const metrics = [
+        ["Time Step", summary.time_step],
+        ["Event ID", summary.event_id],
+        ["Discovered Faults", summary.known_faults],
+        ["Energized P", summary.energized_active_power],
+        ["Weighted Energized |P|", summary.weighted_energized_load],
+        ["Grid Status", summary.source_status],
+        ["Grid P/Q", `${summary.grid_active_power}/${summary.grid_reactive_power}`],
+      ];
+      document.getElementById("summary-grid").innerHTML = metrics.map(([label, value]) => `
+        <div class="metric">
+          <div class="metric-label">${escapeHtml(label)}</div>
+          <div class="metric-value">${escapeHtml(value)}</div>
+        </div>
+      `).join("");
+    }
+
+    function tableHtml(table) {
+      if (!table.rows.length) {
+        return `<div class="empty-table">No rows to display.</div>`;
+      }
+      const head = table.headers.map(header => `<th>${escapeHtml(header)}</th>`).join("");
+      const body = table.rows.map(row => `
+        <tr>${row.map(value => `<td>${escapeHtml(value)}</td>`).join("")}</tr>
+      `).join("");
+      return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+    }
+
+    function objectIconClass(state) {
+      const normalized = String(state || "Idle").toLowerCase();
+      return ["idle", "moving", "repairing", "supplying", "analyzing"].includes(normalized)
+        ? normalized
+        : "idle";
+    }
+
+    function renderObjectStates(objects) {
+      const objectRows = objects.map(object => {
+        const isRc = object.type === "RC";
+        const isMps = object.type === "MPS";
+        const resources = isRc
+          ? `${object.remaining_resources}/${object.total_resources}`
+          : (isMps ? `${object.energy}/${object.energy_capacity} kW.step` : "N/A");
+        const capabilityRows = isMps ? `
+              <span class="object-info-label">P limit</span><span>${escapeHtml(object.p_limit)} kW</span>
+              <span class="object-info-label">S limit</span><span>${escapeHtml(object.s_limit)} kVA</span>
+              <span class="object-info-label">Output</span><span>P=${escapeHtml(object.current_p)} kW, Q=${escapeHtml(object.current_q)} kVar</span>
+              <span class="object-info-label">Areas</span><span>${escapeHtml(object.supply_context?.areas?.join(", ") || "-")}</span>
+        ` : `
+              <span class="object-info-label">Repair speed</span><span>${escapeHtml(isRc ? object.repair_speed : "N/A")}</span>
+        `;
+        return `
+          <details class="object-details">
+            <summary>
+              <span class="object-icon ${object.type === "MPS" ? "mps" : ""} ${objectIconClass(object.state)}" aria-hidden="true"></span>
+              <span class="object-summary-name">${escapeHtml(object.name)} · ${escapeHtml(object.type)}</span>
+              <span class="object-state-text">${escapeHtml(object.state)}</span>
+            </summary>
+            <div class="object-info">
+              <span class="object-info-label">Position</span><span>${escapeHtml(JSON.stringify(object.position))}</span>
+              <span class="object-info-label">Move speed</span><span>${escapeHtml(object.move_speed)}</span>
+              <span class="object-info-label">Inspection range</span><span>${escapeHtml(object.inspection_range)}</span>
+              ${capabilityRows}
+              <span class="object-info-label">Resources/Energy</span><span>${escapeHtml(resources)}</span>
+              <span class="object-info-label">Remaining path</span><span>${escapeHtml(object.remaining_path_pixels)} Pixels</span>
+              <span class="object-info-label">Analysis capability</span><span>${object.fault_analysis_enabled ? "Enabled" : "Disabled"}</span>
+              <span class="object-info-label">Analysis lock</span><span>${object.analysis_locked ? escapeHtml(object.analysis_faults.join(", ") || "Active") : "No"}</span>
+              <span class="object-info-label">Current command</span><span>${escapeHtml(object.current_command)}</span>
+            </div>
+          </details>
+        `;
+      }).join("");
+
+      return `
+        <div class="status-section-label">Object States (${objects.length})</div>
+        ${objectRows}
+      `;
+    }
+
+    function renderStatusTables(tables, objects) {
+      const openByDefault = new Set(["sources", "mps", "energized_loads", "faults"]);
+      const tableRows = Object.entries(tables).map(([key, table]) => `
+        <details ${openByDefault.has(key) ? "open" : ""}>
+          <summary>${escapeHtml(table.title)} (${table.rows.length})</summary>
+          ${tableHtml(table)}
+        </details>
+      `).join("");
+      document.getElementById("status-tables").innerHTML = (
+        renderObjectStates(objects || []) + tableRows
+      );
+    }
+
+    const plotConfig = {
+      responsive: true,
+      displaylogo: false,
+      displayModeBar: false,
+      scrollZoom: false,
+    };
+
+    let hoverTimer = null;
+
+    function pixelKey(x, y) {
+      return `${x},${y}`;
+    }
+
+    function renderPixelZoom(x, y) {
+      if (!latestState?.figure) return;
+      const markerTrace = {
+        type: "scatter",
+        mode: "markers",
+        x: [x],
+        y: [y],
+        marker: {symbol: "square-open", size: 26, color: "#215fa6", line: {width: 2}},
+        hoverinfo: "skip",
+        showlegend: false,
+      };
+      const layout = {
+        ...latestState.figure.layout,
+        title: {text: `Pixel neighborhood around (${x}, ${y})`, x: 0.5, xanchor: "center", font: {size: 14}},
+        height: 360,
+        margin: {l: 40, r: 15, t: 38, b: 35},
+        uirevision: `pixel-${x}-${y}-${latestState.summary.time_step}`,
+        xaxis: {...latestState.figure.layout.xaxis, range: [x - 3.5, x + 3.5], fixedrange: true},
+        yaxis: {...latestState.figure.layout.yaxis, range: [y - 3.5, y + 3.5], fixedrange: true},
+      };
+      Plotly.react("pixel-zoom", [...latestState.figure.data, markerTrace], layout, plotConfig);
+    }
+
+    function inspectHoveredPixel(event) {
+      const point = event?.points?.[0];
+      if (!point) return;
+      const x = Math.round(Number(point.x));
+      const y = Math.round(Number(point.y));
+      const pixel = latestState?.pixels?.[pixelKey(x, y)];
+      if (!pixel) return;
+
+      const details = [
+        `Pixel (${x}, ${y})`,
+        pixel.knowledge,
+        `Road L${pixel.road_level}`,
+      ];
+      if (pixel.nodes.length) details.push(`Node: ${pixel.nodes.join(", ")}`);
+      if (pixel.lines.length) details.push(`Line: ${pixel.lines.join(", ")}`);
+      if (pixel.faults.length) details.push(`Fault: ${pixel.faults.join(", ")}`);
+      document.getElementById("pixel-readout").textContent = details.join(" · ");
+
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => renderPixelZoom(x, y), 70);
+    }
+
+    async function renderMap(figure) {
+      const map = document.getElementById("grid-map");
+      await Plotly.react(map, figure.data, figure.layout, plotConfig);
+      map.removeAllListeners?.("plotly_hover");
+      map.on("plotly_hover", inspectHoveredPixel);
+    }
+
+    function delay(milliseconds) {
+      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+    async function playAnimation(frames) {
+      if (!frames?.length) return;
+      const map = document.getElementById("grid-map");
+      for (const frame of frames) {
+        await Plotly.react(map, frame.figure.data, frame.figure.layout, plotConfig);
+        await delay(350);
+      }
+    }
+
+    function currentSwitchCommandMap() {
+      return Object.fromEntries(
+        Object.entries(pendingSwitches).filter(([, target]) => target)
+      );
+    }
+
+    function currentSwitchSignature() {
+      return JSON.stringify(
+        Object.entries(currentSwitchCommandMap())
+          .sort(([nameA], [nameB]) => nameA.localeCompare(nameB))
+      );
+    }
+
+    function hasPendingSwitchCommands() {
+      return Object.values(pendingSwitches).some(target => Boolean(target));
+    }
+
+    function setSwitchValidationStatus(text, kind = "") {
+      const element = document.getElementById("switch-validation-status");
+      element.textContent = text;
+      element.className = `switch-validation-status ${kind}`.trim();
+    }
+
+    function invalidateSwitchValidation(message = "Switch plan has not been validated.") {
+      validatedMpsContexts = {};
+      switchPlanValidated = false;
+      validatedSwitchSignature = "";
+      setSwitchValidationStatus(message);
+    }
+
+    async function validateSwitchPlan() {
+      try {
+        setBusy(true);
+        const payload = await requestJson("/api/validate-switches", {
+          method: "POST",
+          body: JSON.stringify({switch_commands: currentSwitchCommandMap()}),
+        });
+        validatedMpsContexts = payload.mps_contexts || {};
+        switchPlanValidated = true;
+        validatedSwitchSignature = currentSwitchSignature();
+        renderMobileCommands();
+        setSwitchValidationStatus(payload.message, "success");
+        showMessage(payload.message, "success");
+      } catch (error) {
+        invalidateSwitchValidation(`Validation failed: ${error.message}`);
+        setSwitchValidationStatus(`Validation failed: ${error.message}`, "error");
+        showMessage(`Switch plan rejected: ${error.message}`, "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function switchButtonText(item, pending) {
+      if (item.state === "unknown") return "Unavailable";
+      if (pending) return "Cancel";
+      return item.state === "closed" ? "Open" : "Close";
+    }
+
+    function renderSwitchCommands() {
+      const container = document.getElementById("switch-commands");
+      container.innerHTML = latestState.commands.switches.map(item => {
+        const pending = pendingSwitches[item.name] ?? null;
+        return `
+          <div class="switch-card">
+            <div class="switch-line">
+              <strong>${escapeHtml(item.name)}</strong>
+              <span class="badge ${escapeHtml(item.state)}">${escapeHtml(item.state)}</span>
+            </div>
+            ${pending ? `<div class="badge pending" style="margin-bottom:6px">${escapeHtml(pending)}</div>` : ""}
+            <button
+              data-switch-name="${escapeHtml(item.name)}"
+              ${item.disabled ? "disabled data-preserve-disabled='1'" : ""}
+            >${escapeHtml(switchButtonText(item, pending))}</button>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll("button[data-switch-name]").forEach(button => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.switchName;
+          const item = latestState.commands.switches.find(candidate => candidate.name === name);
+          const opposite = item.state === "closed" ? "opened" : "closed";
+          pendingSwitches[name] = pendingSwitches[name] === opposite ? null : opposite;
+          invalidateSwitchValidation(
+            "Switch plan changed. Validate it again before entering MPS power or executing the step."
+          );
+          renderSwitchCommands();
+          renderMobileCommands();
+        });
+      });
+    }
+
+    function commandButton(name, type, active, label) {
+      return `<button data-unit-name="${escapeHtml(name)}" data-command-type="${type}" class="${active ? "active" : ""}">${label}</button>`;
+    }
+
+    function renderMoveInputs(unit, command) {
+      const lastIndex = command.waypoints.length - 1;
+      return `
+        <div class="waypoint-grid">
+          <div></div><div class="small-note">X</div><div class="small-note">Y</div><div></div>
+          ${command.waypoints.map((point, index) => {
+            const label = index === lastIndex ? "Final" : `Via ${index + 1}`;
+            const removeButton = index === lastIndex
+              ? "<span></span>"
+              : `<button type="button" class="waypoint-remove" data-remove-waypoint="${escapeHtml(unit.name)}" data-waypoint-index="${index}" title="Remove waypoint">×</button>`;
+            return `
+              <div class="waypoint-index">${label}</div>
+              <input type="number" step="1" data-unit="${escapeHtml(unit.name)}" data-waypoint="${index}" data-axis="x" value="${escapeHtml(point.x)}" placeholder="X">
+              <input type="number" step="1" data-unit="${escapeHtml(unit.name)}" data-waypoint="${index}" data-axis="y" value="${escapeHtml(point.y)}" placeholder="Y">
+              ${removeButton}
+            `;
+          }).join("")}
+        </div>
+        <div class="waypoint-actions">
+          <button type="button" data-insert-waypoint="${escapeHtml(unit.name)}" ${command.waypoints.length >= 5 ? "disabled data-preserve-disabled='1'" : ""}>Insert waypoint</button>
+        </div>
+      `;
+    }
+
+    function renderRepairInputs(unit, command) {
+      if (!unit.repairable_faults.length) {
+        return `<div class="small-note">Repaire is unavailable unless this RC is located on a known active fault and has remaining resources.</div>`;
+      }
+      return `
+        <div class="repair-faults">
+          ${unit.repairable_faults.map(fault => `
+            <button data-repair-unit="${escapeHtml(unit.name)}" data-fault-name="${escapeHtml(fault.name)}" class="${command.fault === fault.name ? "active" : ""}">
+              Fault ${escapeHtml(fault.name)} (max ${escapeHtml(fault.maximum_amount)})
+            </button>
+          `).join("")}
+        </div>
+        <div class="repair-row">
+          <label for="repair-${escapeHtml(unit.name)}">Resource for this step</label>
+          <input id="repair-${escapeHtml(unit.name)}" type="number" min="1" step="1" data-repair-amount="${escapeHtml(unit.name)}" value="${escapeHtml(command.amount)}">
+        </div>
+      `;
+    }
+
+    function effectiveSupplyContext(unit) {
+      return validatedMpsContexts[unit.name] || unit.supply_context || {};
+    }
+
+    function renderSupplyInputs(unit, command) {
+      const context = effectiveSupplyContext(unit);
+      const areas = context.areas?.length ? context.areas.join(", ") : "-";
+      return `
+        <div class="supply-context">
+          Node: ${escapeHtml(context.node || "Not at a Node")}<br>
+          Connected Areas: ${escapeHtml(areas)}<br>
+          Required load: P=${escapeHtml(context.load_p ?? 0)} kW, Q=${escapeHtml(context.load_q ?? 0)} kVar<br>
+          Transmission grid: ${context.grid_connected ? "Connected and available" : "Not available to this cluster"}<br>
+          Topology basis: ${switchPlanValidated ? "Validated provisional Switch plan" : "Current committed Switch states"}<br>
+          ${escapeHtml(context.message || "")}
+        </div>
+        <div class="supply-row">
+          <label for="supply-p-${escapeHtml(unit.name)}">P output / kW</label>
+          <input id="supply-p-${escapeHtml(unit.name)}" type="text" inputmode="decimal" autocomplete="off" data-supply-p="${escapeHtml(unit.name)}" value="${escapeHtml(command.p)}" placeholder="Enter P">
+        </div>
+        <div class="supply-row">
+          <label for="supply-q-${escapeHtml(unit.name)}">Q output / kVar</label>
+          <input id="supply-q-${escapeHtml(unit.name)}" type="text" inputmode="decimal" autocomplete="off" data-supply-q="${escapeHtml(unit.name)}" value="${escapeHtml(command.q)}" placeholder="Enter Q">
+        </div>
+      `;
+    }
+
+    function pendingDescription(unit, command) {
+      if (command.type === "continue") return "Continue the current state/command.";
+      if (command.type === "stay") return "Stay: enter Idle at the current position.";
+      if (command.type === "move") {
+        const points = command.waypoints
+          .filter(point => point.x !== "" && point.y !== "")
+          .map(point => `(${point.x}, ${point.y})`);
+        return points.length ? `Move through ${points.join(" → ")}` : "Move selected; enter at least one waypoint.";
+      }
+      if (command.type === "repair") {
+        return `Repaire Fault ${command.fault || "-"} with ${command.amount || "-"} resource.`;
+      }
+      if (command.type === "supply") {
+        return `Supply P=${command.p || 0} kW, Q=${command.q || 0} kVar.`;
+      }
+      return command.type;
+    }
+
+    function renderMobileCommands() {
+      const container = document.getElementById("mobile-commands");
+      container.innerHTML = latestState.commands.mobile_units.map(unit => {
+        const command = pendingMobile[unit.name];
+        const isRc = unit.type === "RC";
+        const isMps = unit.type === "MPS";
+        const resourceText = isRc
+          ? `${unit.remaining_resources}/${unit.total_resources}`
+          : (isMps ? `${unit.energy}/${unit.energy_capacity} kW.step` : "N/A");
+        if (unit.analysis_locked) {
+          pendingMobile[unit.name].type = "continue";
+          return `
+            <div class="unit-card">
+              <div class="unit-heading">
+                <strong>${escapeHtml(unit.name)} · ${escapeHtml(unit.type)}</strong>
+                <span class="badge analyzing">Analyzing</span>
+              </div>
+              <div class="unit-meta">
+                Position ${escapeHtml(JSON.stringify(unit.position))} · Fault(s) ${escapeHtml(unit.analysis_faults.join(", ") || "-")}
+              </div>
+              <div class="supply-context">
+                This object is automatically analyzing the discovered fault for one complete time step. No command can be entered during this step.
+              </div>
+              <div class="pending-line">Pending: Automatic fault analysis.</div>
+            </div>
+          `;
+        }
+        return `
+          <div class="unit-card">
+            <div class="unit-heading">
+              <strong>${escapeHtml(unit.name)} · ${escapeHtml(unit.type)}</strong>
+              <span class="badge ${escapeHtml(String(unit.state).toLowerCase())}">${escapeHtml(unit.state)}</span>
+            </div>
+            <div class="unit-meta">
+              Position ${escapeHtml(JSON.stringify(unit.position))} · Speed ${escapeHtml(unit.move_speed)} · Range ${escapeHtml(unit.inspection_range)} · Resources/Energy ${escapeHtml(resourceText)} · Remaining path ${escapeHtml(unit.remaining_path_pixels)}
+            </div>
+            <div class="segmented ${(!isRc && !isMps) ? "three" : ""}">
+              ${commandButton(unit.name, "continue", command.type === "continue", "Continue")}
+              ${commandButton(unit.name, "move", command.type === "move", "Move")}
+              ${commandButton(unit.name, "stay", command.type === "stay", "Stay")}
+              ${isRc ? commandButton(unit.name, "repair", command.type === "repair", "Repaire") : ""}
+              ${isMps ? commandButton(unit.name, "supply", command.type === "supply", "Supply") : ""}
+            </div>
+            <div class="command-details">
+              ${command.type === "move" ? renderMoveInputs(unit, command) : ""}
+              ${command.type === "repair" ? renderRepairInputs(unit, command) : ""}
+              ${command.type === "supply" ? renderSupplyInputs(unit, command) : ""}
+            </div>
+            <div class="pending-line">Pending: ${escapeHtml(pendingDescription(unit, command))}</div>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll("button[data-command-type]").forEach(button => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.unitName;
+          const type = button.dataset.commandType;
+          pendingMobile[name].type = type;
+          if (type === "repair" && !pendingMobile[name].fault) {
+            const unit = latestState.commands.mobile_units.find(candidate => candidate.name === name);
+            pendingMobile[name].fault = unit.repairable_faults[0]?.name || "";
+          }
+          if (type === "supply") {
+            const unit = latestState.commands.mobile_units.find(candidate => candidate.name === name);
+            const context = effectiveSupplyContext(unit);
+            if (pendingMobile[name].p === "") pendingMobile[name].p = unit.current_p || context.load_p || 0;
+            if (pendingMobile[name].q === "") pendingMobile[name].q = unit.current_q || context.load_q || 0;
+          }
+          renderMobileCommands();
+        });
+      });
+
+      container.querySelectorAll("input[data-waypoint]").forEach(input => {
+        input.addEventListener("input", () => {
+          const name = input.dataset.unit;
+          const index = Number(input.dataset.waypoint);
+          const axis = input.dataset.axis;
+          pendingMobile[name].waypoints[index][axis] = input.value;
+          const line = input.closest(".unit-card").querySelector(".pending-line");
+          const unit = latestState.commands.mobile_units.find(candidate => candidate.name === name);
+          line.textContent = `Pending: ${pendingDescription(unit, pendingMobile[name])}`;
+        });
+      });
+
+      container.querySelectorAll("button[data-insert-waypoint]").forEach(button => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.insertWaypoint;
+          const waypoints = pendingMobile[name].waypoints;
+          if (waypoints.length >= 5) return;
+          waypoints.splice(Math.max(0, waypoints.length - 1), 0, {x: "", y: ""});
+          renderMobileCommands();
+        });
+      });
+
+      container.querySelectorAll("button[data-remove-waypoint]").forEach(button => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.removeWaypoint;
+          const index = Number(button.dataset.waypointIndex);
+          pendingMobile[name].waypoints.splice(index, 1);
+          renderMobileCommands();
+        });
+      });
+
+      container.querySelectorAll("button[data-repair-unit]").forEach(button => {
+        button.addEventListener("click", () => {
+          pendingMobile[button.dataset.repairUnit].fault = button.dataset.faultName;
+          renderMobileCommands();
+        });
+      });
+
+      container.querySelectorAll("input[data-repair-amount]").forEach(input => {
+        input.addEventListener("input", () => {
+          const name = input.dataset.repairAmount;
+          pendingMobile[name].amount = input.value;
+          const line = input.closest(".unit-card").querySelector(".pending-line");
+          const unit = latestState.commands.mobile_units.find(candidate => candidate.name === name);
+          line.textContent = `Pending: ${pendingDescription(unit, pendingMobile[name])}`;
+        });
+      });
+
+      container.querySelectorAll("input[data-supply-p]").forEach(input => {
+        input.addEventListener("input", () => {
+          const name = input.dataset.supplyP;
+          pendingMobile[name].p = input.value;
+          const line = input.closest(".unit-card").querySelector(".pending-line");
+          const unit = latestState.commands.mobile_units.find(candidate => candidate.name === name);
+          line.textContent = `Pending: ${pendingDescription(unit, pendingMobile[name])}`;
+        });
+      });
+      container.querySelectorAll("input[data-supply-q]").forEach(input => {
+        input.addEventListener("input", () => {
+          const name = input.dataset.supplyQ;
+          pendingMobile[name].q = input.value;
+          const line = input.closest(".unit-card").querySelector(".pending-line");
+          const unit = latestState.commands.mobile_units.find(candidate => candidate.name === name);
+          line.textContent = `Pending: ${pendingDescription(unit, pendingMobile[name])}`;
+        });
+      });
+    }
+
+    function renderAll(state, resetPending = false) {
+      latestState = state;
+      if (resetPending || !Object.keys(pendingMobile).length) {
+        resetPendingCommands();
+      } else {
+        state.commands.mobile_units.forEach(unit => {
+          if (!pendingMobile[unit.name]) {
+            pendingMobile[unit.name] = {
+              type: "continue",
+              waypoints: [{x: "", y: ""}],
+              fault: unit.repairable_faults[0]?.name || "",
+              amount: "",
+              p: unit.current_p ?? "",
+              q: unit.current_q ?? "",
+            };
+          }
+        });
+      }
+      renderSummary(state.summary);
+      renderScore(state.game);
+      renderStatusTables(state.tables, state.objects);
+      renderMap(state.figure);
+      if (!document.getElementById("pixel-zoom").data) {
+        renderPixelZoom(0, 0);
+      }
+      renderSwitchCommands();
+      renderMobileCommands();
+      setSwitchValidationStatus(
+        "Set provisional Switch actions, then validate them before entering MPS power."
+      );
+      showMessage(state.message || state.summary.stage, "success");
+      applyGameLock();
+    }
+
+    function buildMobilePayload() {
+      const payload = {};
+      for (const [name, command] of Object.entries(pendingMobile)) {
+        const unit = latestState?.commands?.mobile_units?.find(item => item.name === name);
+        if (unit?.analysis_locked) {
+          payload[name] = {type: "continue"};
+        } else if (command.type === "continue") {
+          payload[name] = {type: "continue"};
+        } else if (command.type === "stay") {
+          payload[name] = {type: "stay"};
+        } else if (command.type === "move") {
+          const waypoints = [];
+          command.waypoints.forEach((point, index) => {
+            const bothEmpty = point.x === "" && point.y === "";
+            if (bothEmpty) return;
+            if (point.x === "" || point.y === "") {
+              throw new Error(`${name} waypoint ${index + 1} requires both X and Y.`);
+            }
+            const x = Number(point.x);
+            const y = Number(point.y);
+            if (!Number.isInteger(x) || !Number.isInteger(y)) {
+              throw new Error(`${name} waypoint ${index + 1} must use integer coordinates.`);
+            }
+            waypoints.push([x, y]);
+          });
+          if (!waypoints.length) {
+            throw new Error(`${name} Move requires at least one waypoint.`);
+          }
+          payload[name] = {type: "move", waypoints};
+        } else if (command.type === "repair") {
+          if (!command.fault) {
+            throw new Error(`${name} has no repairable fault selected.`);
+          }
+          const amount = Number(command.amount);
+          if (!Number.isInteger(amount) || amount <= 0) {
+            throw new Error(`${name} Repaire resource must be a positive integer.`);
+          }
+          payload[name] = {type: "repair", fault: command.fault, amount};
+        } else if (command.type === "supply") {
+          const p = Number(command.p);
+          const q = Number(command.q);
+          if (!Number.isFinite(p) || !Number.isFinite(q)) {
+            throw new Error(`${name} Supply requires numeric P and Q outputs.`);
+          }
+          payload[name] = {type: "supply", p, q};
+        }
+      }
+      return payload;
+    }
+
+    function downloadJson(filename, payload) {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadPendingCommands() {
+      try {
+        const payload = {
+          switch_commands: currentSwitchCommandMap(),
+          mobile_commands: buildMobilePayload(),
+        };
+        const timeStep = Number(latestState?.summary?.time_step ?? 0);
+        downloadJson(`dsr_commands_T${String(timeStep).padStart(3, "0")}.json`, payload);
+        showMessage("Pending command JSON downloaded.", "success");
+      } catch (error) {
+        showMessage(`Cannot download pending commands: ${error.message}`, "error");
+      }
+    }
+
+    async function executeStep() {
+      try {
+        if (latestState?.game?.ended) {
+          throw new Error("The game has ended. Load the base map to start again.");
+        }
+        if (!latestState?.game?.started) {
+          throw new Error("Load the fault scenario before executing commands.");
+        }
+        if (
+          hasPendingSwitchCommands()
+          && (!switchPlanValidated || validatedSwitchSignature !== currentSwitchSignature())
+        ) {
+          throw new Error(
+            "Validate the current Switch plan before executing this time step."
+          );
+        }
+        setBusy(true);
+        const payload = {
+          mobile_commands: buildMobilePayload(),
+          switch_commands: currentSwitchCommandMap(),
+        };
+        const state = await requestJson("/api/execute", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        await playAnimation(state.animation_frames || []);
+        renderAll(state, true);
+      } catch (error) {
+        showMessage(`Command batch rejected: ${error.message}`, "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function loadMode(mode) {
+      try {
+        setBusy(true);
+        const payload = {
+          mode,
+          max_time_step: readMaxTimeStep(),
+        };
+        const state = await requestJson("/api/load", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        renderAll(state, true);
+      } catch (error) {
+        showMessage(error.message, "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function applyMaximumTimeStep() {
+      try {
+        setBusy(true);
+        const state = await requestJson("/api/game/configure", {
+          method: "POST",
+          body: JSON.stringify({max_time_step: readMaxTimeStep()}),
+        });
+        renderAll(state, false);
+      } catch (error) {
+        showMessage(error.message, "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    document.getElementById("apply-max-time").addEventListener("click", applyMaximumTimeStep);
+    document.getElementById("validate-switches").addEventListener("click", validateSwitchPlan);
+    document.getElementById("execute-step").addEventListener("click", executeStep);
+    document.getElementById("execute-step-side").addEventListener("click", executeStep);
+    document.getElementById("download-state").addEventListener("click", () => {
+      window.location.href = "/api/download/state.json";
+    });
+    document.getElementById("download-commands").addEventListener("click", downloadPendingCommands);
+    document.getElementById("load-base").addEventListener("click", () => loadMode("base"));
+    document.getElementById("load-scenario").addEventListener("click", () => loadMode("scenario"));
+    document.getElementById("exit-server").addEventListener("click", async () => {
+      try {
+        await requestJson("/api/shutdown", {method: "POST", body: "{}"});
+        showMessage("Server shutdown requested. This page will stop responding.", "success");
+      } catch (error) {
+        showMessage(error.message, "error");
+      }
+    });
+
+    requestJson("/api/state")
+      .then(state => renderAll(state, true))
+      .catch(error => showMessage(error.message, "error"));
+  </script>
+</body>
+</html>

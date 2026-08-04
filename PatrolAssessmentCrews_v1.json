@@ -1,0 +1,10 @@
+{
+  "PatrolAssessmentCrews": [
+    {
+      "name": "PAC1",
+      "initial_node": "N6",
+      "move_speed": 10,
+      "inspection_range": 4
+    }
+  ]
+}

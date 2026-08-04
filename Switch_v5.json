@@ -1,0 +1,60 @@
+{
+  "Switches": [
+    {
+      "name": "S1",
+      "line": "L1",
+      "node": "N1",
+      "state": "closed",
+      "label_position": 6
+    },
+    {
+      "name": "S2",
+      "line": "L2",
+      "node": "N2",
+      "state": "closed",
+      "label_position": 2
+    },
+    {
+      "name": "S3",
+      "line": "L6",
+      "node": "N2",
+      "state": "closed",
+      "label_position": 6
+    },
+    {
+      "name": "S4",
+      "line": "L7",
+      "node": "N3",
+      "state": "closed",
+      "label_position": 8
+    },
+    {
+      "name": "S5",
+      "line": "L12",
+      "node": "N13",
+      "state": "closed",
+      "label_position": 4
+    },
+    {
+      "name": "S6",
+      "line": "L14",
+      "node": "N1",
+      "state": "opened",
+      "label_position": 4
+    },
+    {
+      "name": "S7",
+      "line": "L18",
+      "node": "N13",
+      "state": "opened",
+      "label_position": 2
+    },
+    {
+      "name": "S8",
+      "line": "L13",
+      "node": "N5",
+      "state": "opened",
+      "label_position": 6
+    }
+  ]
+}

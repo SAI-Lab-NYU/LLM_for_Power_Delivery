@@ -1,0 +1,7 @@
+{
+  "TransmissionSource": {
+    "name": "Transmission Grid",
+    "node": "N1",
+    "restoration_time_step": 6
+  }
+}

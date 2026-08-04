@@ -1,0 +1,324 @@
+{
+  "ElectricalLines": [
+    {
+      "name": "L1",
+      "from": "N1",
+      "to": "N2",
+      "position": [
+        [
+          0,
+          20
+        ],
+        [
+          0,
+          16
+        ]
+      ],
+      "label_position": 6
+    },
+    {
+      "name": "L2",
+      "from": "N2",
+      "to": "N4",
+      "position": [
+        [
+          0,
+          16
+        ],
+        [
+          8,
+          16
+        ]
+      ],
+      "label_position": 8
+    },
+    {
+      "name": "L3",
+      "from": "N4",
+      "to": "N5",
+      "position": [
+        [
+          8,
+          16
+        ],
+        [
+          12,
+          16
+        ],
+        [
+          12,
+          12
+        ]
+      ],
+      "label_position": 2
+    },
+    {
+      "name": "L4",
+      "from": "N2",
+      "to": "N6",
+      "position": [
+        [
+          0,
+          16
+        ],
+        [
+          -8,
+          16
+        ]
+      ],
+      "label_position": 8
+    },
+    {
+      "name": "L5",
+      "from": "N6",
+      "to": "N7",
+      "position": [
+        [
+          -8,
+          16
+        ],
+        [
+          -10,
+          16
+        ]
+      ],
+      "label_position": 2
+    },
+    {
+      "name": "L6",
+      "from": "N2",
+      "to": "N3",
+      "position": [
+        [
+          0,
+          16
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "label_position": 4
+    },
+    {
+      "name": "L7",
+      "from": "N3",
+      "to": "N8",
+      "position": [
+        [
+          0,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ],
+      "label_position": 2
+    },
+    {
+      "name": "L8",
+      "from": "N8",
+      "to": "N9",
+      "position": [
+        [
+          4,
+          0
+        ],
+        [
+          12,
+          0
+        ]
+      ],
+      "label_position": 8
+    },
+    {
+      "name": "L9",
+      "from": "N3",
+      "to": "N10",
+      "position": [
+        [
+          0,
+          0
+        ],
+        [
+          -4,
+          0
+        ]
+      ],
+      "label_position": 8
+    },
+    {
+      "name": "L10",
+      "from": "N10",
+      "to": "N12",
+      "position": [
+        [
+          -4,
+          0
+        ],
+        [
+          -8,
+          0
+        ]
+      ],
+      "label_position": 2
+    },
+    {
+      "name": "L11",
+      "from": "N10",
+      "to": "N11",
+      "position": [
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          -8
+        ]
+      ],
+      "label_position": 4
+    },
+    {
+      "name": "L12",
+      "from": "N3",
+      "to": "N13",
+      "position": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          -16
+        ]
+      ],
+      "label_position": 6
+    },
+    {
+      "name": "L13",
+      "from": "N5",
+      "to": "N9",
+      "position": [
+        [
+          12,
+          12
+        ],
+        [
+          12,
+          0
+        ]
+      ],
+      "label_position": 6
+    },
+    {
+      "name": "L14",
+      "from": "N1",
+      "to": "V1",
+      "position": [
+        [
+          0,
+          20
+        ],
+        [
+          -10,
+          20
+        ]
+      ],
+      "label_position": 8
+    },
+    {
+      "name": "L15",
+      "from": "V1",
+      "to": "V2",
+      "position": [
+        [
+          -10,
+          20
+        ],
+        [
+          -12,
+          20
+        ],
+        [
+          -12,
+          0
+        ]
+      ],
+      "label_position": 4
+    },
+    {
+      "name": "L16",
+      "from": "V2",
+      "to": "V3",
+      "position": [
+        [
+          -12,
+          0
+        ],
+        [
+          -12,
+          -8
+        ]
+      ],
+      "label_position": 6
+    },
+    {
+      "name": "L17",
+      "from": "V3",
+      "to": "N13",
+      "position": [
+        [
+          -12,
+          -8
+        ],
+        [
+          -12,
+          -16
+        ],
+        [
+          0,
+          -16
+        ]
+      ],
+      "label_position": 2
+    },
+    {
+      "name": "L18",
+      "from": "N13",
+      "to": "V4",
+      "position": [
+        [
+          0,
+          -16
+        ],
+        [
+          10,
+          -16
+        ]
+      ],
+      "label_position": 8
+    },
+    {
+      "name": "L19",
+      "from": "V4",
+      "to": "N9",
+      "position": [
+        [
+          10,
+          -16
+        ],
+        [
+          12,
+          -16
+        ],
+        [
+          12,
+          0
+        ]
+      ],
+      "label_position": 6
+    }
+  ]
+}

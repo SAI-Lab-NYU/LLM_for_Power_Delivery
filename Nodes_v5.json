@@ -1,0 +1,219 @@
+{
+  "Nodes": [
+    {
+      "name": "N3",
+      "position": [
+        0,
+        0
+      ],
+      "label_position": 7,
+      "node_type": "distribution"
+    },
+    {
+      "name": "N8",
+      "position": [
+        4,
+        0
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        150,
+        70,
+        2
+      ]
+    },
+    {
+      "name": "N9",
+      "position": [
+        12,
+        0
+      ],
+      "label_position": 6,
+      "node_type": "distribution",
+      "load": [
+        500,
+        200,
+        4
+      ]
+    },
+    {
+      "name": "N10",
+      "position": [
+        -4,
+        0
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        400,
+        300,
+        6
+      ]
+    },
+    {
+      "name": "N12",
+      "position": [
+        -8,
+        0
+      ],
+      "label_position": 4,
+      "node_type": "distribution",
+      "load": [
+        150,
+        -80,
+        5
+      ]
+    },
+    {
+      "name": "N11",
+      "position": [
+        -4,
+        -8
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        200,
+        80,
+        10
+      ]
+    },
+    {
+      "name": "N13",
+      "position": [
+        0,
+        -16
+      ],
+      "label_position": 7,
+      "node_type": "distribution",
+      "load": [
+        200,
+        50,
+        4
+      ]
+    },
+    {
+      "name": "N2",
+      "position": [
+        0,
+        16
+      ],
+      "label_position": 7,
+      "node_type": "distribution",
+      "load": [
+        250,
+        120,
+        1
+      ]
+    },
+    {
+      "name": "N4",
+      "position": [
+        8,
+        16
+      ],
+      "label_position": 2,
+      "node_type": "distribution"
+    },
+    {
+      "name": "N5",
+      "position": [
+        12,
+        12
+      ],
+      "label_position": 6,
+      "node_type": "distribution",
+      "load": [
+        500,
+        300,
+        5
+      ]
+    },
+    {
+      "name": "N1",
+      "position": [
+        0,
+        20
+      ],
+      "label_position": 3,
+      "node_type": "transmission",
+      "always_inspected": true,
+      "fault_protected": true
+    },
+    {
+      "name": "N6",
+      "position": [
+        -8,
+        16
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        10,
+        5,
+        4
+      ]
+    },
+    {
+      "name": "N7",
+      "position": [
+        -10,
+        16
+      ],
+      "label_position": 1,
+      "node_type": "distribution",
+      "load": [
+        40,
+        15,
+        5
+      ]
+    },
+    {
+      "name": "V1",
+      "position": [
+        -10,
+        20
+      ],
+      "label_position": 2,
+      "node_type": "distribution"
+    },
+    {
+      "name": "V2",
+      "position": [
+        -12,
+        0
+      ],
+      "label_position": 4,
+      "node_type": "distribution",
+      "load": [
+        120,
+        60,
+        8
+      ]
+    },
+    {
+      "name": "V3",
+      "position": [
+        -12,
+        -8
+      ],
+      "label_position": 4,
+      "node_type": "distribution",
+      "load": [
+        200,
+        -100,
+        2
+      ]
+    },
+    {
+      "name": "V4",
+      "position": [
+        10,
+        -16
+      ],
+      "label_position": 8,
+      "node_type": "distribution"
+    }
+  ]
+}

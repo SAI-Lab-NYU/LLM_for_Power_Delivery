@@ -1,0 +1,30 @@
+{
+  "event_id": 0,
+  "default_inspected": true,
+  "unknown_regions": [
+    {
+      "name": "InitialUnknownRegion",
+      "lower_left": [
+        -13,
+        -17
+      ],
+      "upper_right": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "V4UnknownSquare3x3",
+      "lower_left": [
+        10,
+        -18
+      ],
+      "upper_right": [
+        12,
+        -16
+      ]
+    }
+  ],
+  "open_switches_in_unknown_regions": true,
+  "open_switches_adjacent_to_unknown_areas": true
+}

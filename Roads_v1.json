@@ -1,0 +1,39 @@
+{
+  "Roads": [
+    {
+      "name": "R2_NS_West",
+      "level": 2,
+      "position": [[-11, -18], [-11, 22]]
+    },
+    {
+      "name": "R2_EW_Center",
+      "level": 2,
+      "position": [[-15, 0], [15, 0]]
+    },
+    {
+      "name": "R2_South_to_N11",
+      "level": 2,
+      "position": [[5, -18], [5, -8], [-4, -8]]
+    },
+    {
+      "name": "R2_West_to_N2",
+      "level": 2,
+      "position": [[-15, 10], [0, 10], [0, 16]]
+    },
+    {
+      "name": "R1_N7_West",
+      "level": 1,
+      "position": [[-10, 16], [-12, 16]]
+    },
+    {
+      "name": "R1_N11_to_V3",
+      "level": 1,
+      "position": [[-4, -8], [-12, -8]]
+    },
+    {
+      "name": "R1_V4_North",
+      "level": 1,
+      "position": [[10, -16], [10, 0]]
+    }
+  ]
+}

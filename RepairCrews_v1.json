@@ -1,0 +1,26 @@
+{
+  "RepairCrews": [
+    {
+      "name": "RC1",
+      "initial_position": [
+        6,
+        0
+      ],
+      "inspection_range": 2,
+      "move_speed": 8,
+      "repair_speed": 5,
+      "total_resources": 30
+    },
+    {
+      "name": "RC2",
+      "initial_position": [
+        7,
+        -16
+      ],
+      "inspection_range": 2,
+      "move_speed": 6,
+      "repair_speed": 8,
+      "total_resources": 40
+    }
+  ]
+}
