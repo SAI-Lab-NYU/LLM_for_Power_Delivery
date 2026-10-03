@@ -1,0 +1,6 @@
+requests>=2.31
+transformers>=4.44
+accelerate>=0.33
+torch>=2.3
+# optional
+bitsandbytes>=0.43   # --load-in-4bit
