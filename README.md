@@ -258,9 +258,18 @@ Results should be interpreted within the following boundaries:
 
 From this directory:
 
+On macOS or Linux:
+
+```bash
+python3 -m pip install -r requirements.txt
+./run_v23.sh
+```
+
+On Windows PowerShell:
+
 ```powershell
 python -m pip install -r requirements.txt
-python simulator_web_v23.py
+.\run_v23.ps1
 ```
 
 The graphical dashboard opens at:
