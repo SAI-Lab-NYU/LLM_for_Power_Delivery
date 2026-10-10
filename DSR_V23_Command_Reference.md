@@ -39,10 +39,10 @@ This request performs a complete restart:
 1. Reloads the Base Map and all configured objects.
 2. Reloads faults from the scenario files.
 3. Reloads the default unknown regions from `UnknownState_v1.json`.
-4. Resets all RCs, Patrol and Assessment Crew (PAC) units, and MPS units to their initial states.
+4. Resets all RCs, Scout units, and MPS units to their initial states.
 5. Restores initial Switch states and the configured transmission-source outage.
 6. Resets the simulation to `Time Step = 0`.
-7. Resets the score and immediately records the T0 weighted contribution `sum(abs(P) * W)` over energized loads.
+7. Resets the score and immediately records `P0`.
 8. Sets the maximum completed time step to `N = 20` in this example.
 
 The aliases `"scenario"` and `"faults"` currently have the same effect as `"reset"`, but `"reset"` is the recommended name for starting or restarting a game.
@@ -75,7 +75,7 @@ Optional configuration:
 }
 ```
 
-**Meaning:** Reloads the map, network elements, Switches, roads, and mobile objects without loading the fault scenario. The simulator returns to `Time Step = 0`, but the game has not started and no weighted T0 contribution has been scored.
+**Meaning:** Reloads the map, network elements, Switches, roads, and mobile objects without loading the fault scenario. The simulator returns to `Time Step = 0`, but the game has not started and no `P0` has been scored.
 
 **Typical use:** Inspecting the clean Base Map or changing `N` before starting a scenario.
 
@@ -242,7 +242,7 @@ Content-Type: application/json
   "mobile_commands": {
     "RC1": {"type": "continue"},
     "RC2": {"type": "move", "waypoints": [[0, 0]]},
-    "PAC1": {"type": "stay"},
+    "Scout": {"type": "stay"},
     "MPS1": {"type": "supply", "p": 300, "q": 140}
   }
 }
@@ -326,7 +326,7 @@ A complete example is:
       "type": "move",
       "waypoints": [[0, 5], [0, 0]]
     },
-    "PAC1": {
+    "Scout": {
       "type": "stay"
     },
     "MPS1": {
@@ -381,7 +381,7 @@ Example: a closing operation that would create a loop may become legal when anot
 
 ## 6. Mobile-Object Command Summary
 
-| Command | RC | PAC | MPS | Meaning |
+| Command | RC | Scout | MPS | Meaning |
 |---|---:|---:|---:|---|
 | `continue` | Yes | Yes | Yes | Continue the current valid activity or remain Idle. |
 | `move` | Yes | Yes | Yes | Replace the current activity with movement through ordered waypoints. |
@@ -407,12 +407,12 @@ The aliases `"keep"` and an empty command type are also interpreted as Continue,
 
 ### Behavior by Object State
 
-- **Moving RC or PAC:** continues the remaining planned path.
+- **Moving RC or Scout:** continues the remaining planned path.
 - **Moving MPS:** continues the remaining planned path.
 - **Repairing RC:** repeats the previous repair amount when the same repair is still legal; otherwise the RC becomes Idle.
 - **Supplying MPS:** continues the current P/Q output.
 - **Idle object:** remains Idle.
-- **Analysis-locked RC or PAC:** performs the mandatory automatic analysis step. No alternative command is accepted during that step.
+- **Analysis-locked RC or Scout:** performs the mandatory automatic analysis step. No alternative command is accepted during that step.
 
 ---
 
@@ -450,11 +450,11 @@ The aliases `"keep"` and an empty command type are also interpreted as Continue,
 
 ### Fault-Discovery Behavior
 
-- RC and PAC have automatic fault analysis enabled.
-- When an RC or PAC discovers a previously undiscovered fault during movement, it stops and preserves its remaining route.
+- RC and Scout have automatic fault analysis enabled.
+- When an RC or Scout discovers a previously undiscovered fault during movement, it stops and preserves its remaining route.
 - During the next complete time step, that object is locked for automatic fault analysis and cannot accept a different command.
 - The fault location is visible immediately, but its repair resource remains hidden until analysis finishes.
-- An RC or PAC arriving at an already discovered but unanalyzed fault also enters the one-step analysis lock.
+- An RC or Scout arriving at an already discovered but unanalyzed fault also enters the one-step analysis lock.
 - MPS has the analysis interface but it is disabled in V23. An MPS does not stop or analyze when it discovers a fault.
 
 ---
@@ -476,7 +476,7 @@ The aliases `"keep"` and an empty command type are also interpreted as Continue,
 - Disconnects an MPS that is supplying.
 - Sets the object state to Idle.
 
-A Stay command is rejected when an RC or PAC is locked for automatic fault analysis.
+A Stay command is rejected when an RC or Scout is locked for automatic fault analysis.
 
 ---
 
@@ -582,7 +582,7 @@ Reactive power does not reduce the stored energy in the current model.
 
 ## 12. Automatic Fault-Analysis Lock
 
-When an RC or PAC begins analyzing a fault, the object is locked for one complete time step.
+When an RC or Scout begins analyzing a fault, the object is locked for one complete time step.
 
 Recommended command during the locked step:
 
@@ -612,8 +612,8 @@ For each successful time step, V23 processes the batch in this order:
 1. Copy the live environment for atomic validation.
 2. Apply all requested Switch targets simultaneously.
 3. Validate Switch safety, source-restoration safety, and radiality.
-4. Detect automatic analysis that must begin because an RC or PAC is already at a known, unanalyzed fault.
-5. Validate and apply RC, PAC, and MPS commands.
+4. Detect automatic analysis that must begin because an RC or Scout is already at a known, unanalyzed fault.
+5. Validate and apply RC, Scout, and MPS commands.
 6. Check MPS energy and automatically disconnect an MPS that cannot sustain one full step.
 7. Validate cluster P/Q balance.
 8. Advance all mobile objects for one complete time step.
@@ -643,7 +643,7 @@ An explicit version is:
   "mobile_commands": {
     "RC1": {"type": "continue"},
     "RC2": {"type": "continue"},
-    "PAC1": {"type": "continue"},
+    "Scout": {"type": "continue"},
     "MPS1": {"type": "continue"}
   }
 }
@@ -651,7 +651,7 @@ An explicit version is:
 
 ---
 
-### 14.2 Move RC1 and PAC1
+### 14.2 Move RC1 and Scout
 
 ```json
 {
@@ -661,7 +661,7 @@ An explicit version is:
       "type": "move",
       "waypoints": [[0, 0]]
     },
-    "PAC1": {
+    "Scout": {
       "type": "move",
       "waypoints": [[-4, 0], [-4, -8]]
     }
@@ -762,9 +762,7 @@ The game ends when either condition is met:
 1. The completed time step reaches `N`.
 2. All faults are cleared and all load-bearing Nodes are energized before `N`.
 
-For each completed time step `t`, the scoring contribution is `sum(abs(P) * W)` over all energized load-bearing Nodes. The cumulative score is the sum of these weighted contributions from T0 through the current step. Once a load has been energized at a completed time step, that load must remain energized at every later completed time step. If any previously energized load becomes de-energized, the score is reset to zero and remains permanently locked. The rule does not compare aggregate power values, so energizing a negative-P load contributes its absolute active-power magnitude and does not by itself trigger a score reset.
-
-For early completion at time step `k < N`, the simulator projects the fully restored weighted value `sum(abs(P) * W)` through the remaining steps and adds it to the final score.
+For early completion at time step `k < N`, the simulator projects the fully restored active power through the remaining steps and adds it to the final score.
 
 After the game ends, normal time-step commands are disabled. Start a new game with:
 

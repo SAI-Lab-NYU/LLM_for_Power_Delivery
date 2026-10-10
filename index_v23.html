@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DSR Grid Map V23-HF4</title>
+  <title>DSR Grid Map v23</title>
   <script src="/plotly.min.js"></script>
   <style>
     :root {
@@ -797,7 +797,7 @@
 </head>
 <body>
   <header>
-    <h1>DSR Grid Map V23-HF4</h1>
+    <h1>DSR Grid Map v23</h1>
     <a class="text-interface-link" href="/text" target="_blank">Text Interface</a>
     <button id="load-base">Load Base Map</button>
     <button id="load-scenario">Reset Fault Scenario</button>
@@ -968,9 +968,7 @@
         ["Current T", game.time_step],
         ["Maximum N", game.max_time_step],
         ["Restored P", numberText(game.restored_active_power)],
-        ["Weighted |P|×W", numberText(game.weighted_restored_load)],
         ["Total P", numberText(game.total_active_load)],
-        ["Total |P|×W", numberText(game.total_weighted_load)],
         ["Score", numberText(game.score)],
         ["Status", game.status],
       ];
@@ -984,27 +982,21 @@
       const status = document.getElementById("score-status");
       const details = [];
       if (game.locked) {
-        const lostLoads = (game.violation_loads || []).join(", ") || "one or more loads";
-        details.push(`Previously energized load(s) ${lostLoads} lost power at T=${game.violation_step}; score is permanently locked at zero.`);
+        details.push(`P decreased at T=${game.violation_step}; score is permanently locked at zero.`);
       } else if (game.ended) {
         details.push(game.end_reason || "Game completed.");
         if (game.projected_steps) {
           details.push(`${game.projected_steps} remaining step(s) were projected at full restoration.`);
         }
       } else if (game.started) {
-        details.push("Each step contributes Σ(|P|×W) over energized loads. Once a load is energized, it must remain energized in every later step.");
+        details.push("Score = Σ(P0...Pi). Restored active power must never decrease.");
       } else {
         details.push("Set N, then load the fault scenario defined by the scenario files.");
       }
       status.textContent = details.join(" ");
       status.className = `score-status ${game.ended ? "ended" : (game.locked ? "locked" : "")}`.trim();
 
-      const weightedHistory = game.weighted_load_history || game.power_history || [];
-      const loadHistory = game.energized_load_history || [];
-      const history = weightedHistory.map((value, index) => {
-        const loads = (loadHistory[index] || []).join(", ") || "None";
-        return `T${index}: |P|×W=${numberText(value)} [${loads}]`;
-      }).join("  ");
+      const history = (game.power_history || []).map((power, index) => `T${index}: ${numberText(power)}`).join("  ");
       document.getElementById("score-history").textContent = history || "No score history yet.";
     }
 
@@ -1021,9 +1013,12 @@
       });
 
       document.getElementById("load-base").disabled = false;
-      document.getElementById("load-scenario").disabled = latestState.game.ended && !latestState.scenario.can_edit;
+      document.getElementById("load-scenario").disabled = false;
       if (latestState.game.ended) {
-        setSwitchValidationStatus("Game ended. Load the base map before starting a new scenario.", "error");
+        setSwitchValidationStatus(
+          "Game ended. Reset Fault Scenario restarts directly at time step 0.",
+          "error"
+        );
       }
     }
 
@@ -1033,7 +1028,7 @@
         ["Event ID", summary.event_id],
         ["Discovered Faults", summary.known_faults],
         ["Energized P", summary.energized_active_power],
-        ["Weighted Energized |P|", summary.weighted_energized_load],
+        ["Weighted Energized P", summary.weighted_energized_load],
         ["Grid Status", summary.source_status],
         ["Grid P/Q", `${summary.grid_active_power}/${summary.grid_reactive_power}`],
       ];

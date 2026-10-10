@@ -37,9 +37,7 @@ backend_lock = threading.RLock()
 server_instance: uvicorn.Server | None = None
 plotly_javascript = get_plotlyjs()
 
-BUILD_ID = "V23-HF4"
-
-app = FastAPI(title=f"DSR Grid Map {BUILD_ID}")
+app = FastAPI(title="DSR Grid Map v23")
 
 
 TABLE_DEFINITIONS = {
@@ -104,7 +102,7 @@ COMMAND_SCHEMA = {
     "mobile_commands": {
         "RC1": {"type": "continue"},
         "RC2": {"type": "move", "waypoints": [[0, 0]]},
-        "PAC1": {"type": "stay"},
+        "Scout": {"type": "stay"},
         "MPS1": {"type": "supply", "p": 800, "q": 440},
     },
 }
@@ -123,7 +121,7 @@ def _summary_payload_for(source: DSRDashboardBackend) -> Dict[str, Any]:
 
     energized_active_power = source.restored_active_power()
     weighted_energized_load = sum(
-        abs(node.active_power) * node.load_weight
+        node.active_power * node.load_weight
         for node in source.nodes.values()
         if node.has_load and node.energized
     )
@@ -293,15 +291,7 @@ def _pixel_payload_for(
             "road_level": pixel.road_level,
             "nodes": sorted(pixel.node_names),
             "lines": sorted(pixel.line_names),
-            "faults": sorted(
-                fault_name
-                for fault_name in pixel.active_fault_ids
-                if (
-                    pixel.is_inspected(source.event_id)
-                    and fault_name in source.faults
-                    and source.faults[fault_name].is_known(source.event_id)
-                )
-            ),
+            "faults": sorted(pixel.active_fault_ids),
         }
         for (x, y), pixel in source.graph.pixels.items()
     }
@@ -322,7 +312,6 @@ def _state_payload_for(
 ) -> Dict[str, Any]:
     payload: Dict[str, Any] = {
         "ok": True,
-        "build_id": BUILD_ID,
         "message": message,
         "summary": _summary_payload_for(source),
         "game": source.game_payload(),
@@ -372,14 +361,15 @@ def _text_state_payload_for(
             "active": fault.active,
             "analyzed": fault.analyzed,
             "analyzed_by": fault.analyzed_by,
-            "repair_resource": fault.public_repair_resource,
+            "repair_resource": (
+                fault.repair_resource if fault.analyzed else None
+            ),
             "remaining_repair_resource": (
-                fault.public_remaining_repair_resource
+                fault.remaining_repair_resource if fault.analyzed else None
             ),
             "areas": list(fault.area_names),
         }
         for fault in source.faults.values()
-        if fault.is_known(source.event_id)
     ]
     source_fault = None
     if source.transmission_source is not None:
@@ -490,20 +480,14 @@ def _command_result_message(result: Dict[str, Any]) -> str:
 def index() -> HTMLResponse:
     if not INDEX_PATH.exists():
         return HTMLResponse("index_v23.html is missing.", status_code=500)
-    return HTMLResponse(
-        INDEX_PATH.read_text(encoding="utf-8"),
-        headers={"Cache-Control": "no-store"},
-    )
+    return HTMLResponse(INDEX_PATH.read_text(encoding="utf-8"))
 
 
 @app.get("/text", response_class=HTMLResponse)
 def text_index() -> HTMLResponse:
     if not TEXT_INDEX_PATH.exists():
         return HTMLResponse("text_v23.html is missing.", status_code=500)
-    return HTMLResponse(
-        TEXT_INDEX_PATH.read_text(encoding="utf-8"),
-        headers={"Cache-Control": "no-store"},
-    )
+    return HTMLResponse(TEXT_INDEX_PATH.read_text(encoding="utf-8"))
 
 
 @app.get("/plotly.min.js")
@@ -540,18 +524,24 @@ async def load_state(request: Request) -> JSONResponse:
                     backend.configure_max_time_step(
                         payload.get("max_time_step")
                     )
-                message = "Base map loaded. Configure the scenario and start."
+                message = "Base map loaded. Configure N, then load the file-defined scenario."
             elif mode in {"scenario", "faults", "reset"}:
-                if payload.get("max_time_step") is not None:
-                    backend.configure_max_time_step(
-                        payload.get("max_time_step")
-                    )
+                # A scenario load is a complete restart. Preserve the current N
+                # unless the request supplies a replacement value, then rebuild
+                # every runtime object before loading faults and unknown Pixels.
+                requested_max_time_step = payload.get(
+                    "max_time_step",
+                    backend.game_score.max_time_step,
+                )
+                backend.load_map(render_output=False)
+                backend.configure_max_time_step(requested_max_time_step)
                 backend.load_faults_and_unknown(
                     render_output=False,
                     unknown_regions=payload.get("unknown_regions"),
                 )
                 message = (
-                    "Fault scenario loaded. P0 has been added to the score."
+                    "Fault scenario reset to time step 0. "
+                    "P0 has been added to the score."
                 )
             else:
                 raise ValueError(f"Unsupported load mode: {mode}")

@@ -1,7 +1,7 @@
 {
-  "PatrolAssessmentCrews": [
+  "Scouts": [
     {
-      "name": "PAC1",
+      "name": "Scout",
       "initial_node": "N6",
       "move_speed": 10,
       "inspection_range": 4

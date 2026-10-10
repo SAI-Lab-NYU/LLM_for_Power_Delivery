@@ -376,25 +376,6 @@ def build_grid_figure(backend: DSRDashboardBackend) -> go.Figure:
     for fault in backend.faults.values():
         if not fault.active or not fault.is_known(backend.event_id):
             continue
-        public_required = fault.public_repair_resource
-        public_remaining = fault.public_remaining_repair_resource
-        analysis_status = "Complete" if fault.analyzed else "Pending"
-        required_text = (
-            str(public_required) if public_required is not None else "Hidden"
-        )
-        remaining_text = (
-            str(public_remaining) if public_remaining is not None else "Hidden"
-        )
-        fault_hover = (
-            f"Fault {fault.name}<br>Position: {fault.position}"
-            f"<br>Status: Active"
-            f"<br>Analysis: {analysis_status}"
-            f"<br>Required repair resource: {required_text}"
-            f"<br>Remaining repair resource: {remaining_text}"
-            f"<br>Area: {', '.join(fault.area_names)}"
-            "<extra></extra>"
-        )
-
         figure.add_trace(
             go.Scatter(
                 x=[fault.position[0]],
@@ -409,7 +390,13 @@ def build_grid_figure(backend: DSRDashboardBackend) -> go.Figure:
                 text=[fault.name],
                 textposition="top right",
                 textfont={"color": "#7F0000", "size": 12},
-                hovertemplate=fault_hover,
+                hovertemplate=(
+                    f"Fault {fault.name}<br>Position: {fault.position}"
+                    f"<br>Status: Active"
+                    f"<br>Remaining repair resource: {fault.remaining_repair_resource}"
+                    f"<br>Area: {', '.join(fault.area_names)}"
+                    "<extra></extra>"
+                ),
                 showlegend=False,
                 name=f"Fault {fault.name}",
             )

@@ -2010,18 +2010,6 @@ class Fault:
             else 0
         )
 
-    @property
-    def public_repair_resource(self) -> Optional[int]:
-        """Return the repair requirement only after analysis is complete."""
-
-        return self.repair_resource if self.analyzed else None
-
-    @property
-    def public_remaining_repair_resource(self) -> Optional[int]:
-        """Return the remaining repair requirement only after analysis."""
-
-        return self.remaining_repair_resource if self.analyzed else None
-
     def mark_analyzed(self, unit_name: str, time_step: Optional[int] = None) -> None:
         """Reveal repair requirements after one automatic analysis step."""
 
@@ -3705,25 +3693,25 @@ class RepairCrew:
 
 
 @dataclass
-class PatrolAssessmentCrew(RepairCrew):
-    """Represent a Patrol and Assessment Crew (PAC) without repair ability."""
+class Scout(RepairCrew):
+    """Represent a fast inspection-only mobile unit without repair ability."""
 
     repair_speed: int = field(default=0, init=False)
     total_resources: int = field(default=0, init=False)
-    unit_type: str = field(default="PAC", init=False)
+    unit_type: str = field(default="Scout", init=False)
     body_color: str = field(default="#00897B", init=False, repr=False)
     edge_color: str = field(default="#004D40", init=False, repr=False)
     label_color: str = field(default="#00695C", init=False, repr=False)
     range_color: str = field(default="#4DB6AC", init=False, repr=False)
 
     def __post_init__(self) -> None:
-        """Validate movement and inspection parameters for a PAC unit."""
+        """Validate movement and inspection parameters for a Scout unit."""
 
         self.initial_position = tuple(self.initial_position)
 
         if not self.graph.contains(self.initial_position):
             raise ValueError(
-                f"PAC {self.name} starts outside the graph: "
+                f"Scout {self.name} starts outside the graph: "
                 f"{self.initial_position}"
             )
 
@@ -3748,32 +3736,32 @@ class PatrolAssessmentCrew(RepairCrew):
         json_path: Path,
         graph: Graph,
         nodes: Dict[str, Node],
-    ) -> Dict[str, "PatrolAssessmentCrew"]:
-        """Load all PAC units and resolve optional node-based positions."""
+    ) -> Dict[str, "Scout"]:
+        """Load all Scout units and resolve optional node-based positions."""
 
         if not json_path.exists():
             raise FileNotFoundError(
-                f"Cannot find PAC file: {json_path}"
+                f"Cannot find Scout file: {json_path}"
             )
 
         with json_path.open("r", encoding="utf-8") as file:
             data = json.load(file)
 
-        pacs: Dict[str, PatrolAssessmentCrew] = {}
+        scouts: Dict[str, Scout] = {}
 
-        for unit_data in data.get("PatrolAssessmentCrews", []):
+        for unit_data in data.get("Scouts", []):
             if "initial_node" in unit_data:
                 node_name = unit_data["initial_node"]
                 if node_name not in nodes:
                     raise KeyError(
-                        f"PAC {unit_data['name']} references unknown "
+                        f"Scout {unit_data['name']} references unknown "
                         f"node {node_name}."
                     )
                 initial_position = nodes[node_name].position
             else:
                 initial_position = tuple(unit_data["initial_position"])
 
-            pac = cls(
+            scout = cls(
                 name=unit_data["name"],
                 initial_position=initial_position,
                 inspection_range=int(unit_data["inspection_range"]),
@@ -3781,22 +3769,22 @@ class PatrolAssessmentCrew(RepairCrew):
                 graph=graph,
             )
 
-            if pac.name in pacs:
-                raise ValueError(f"Duplicate PAC name: {pac.name}")
+            if scout.name in scouts:
+                raise ValueError(f"Duplicate Scout name: {scout.name}")
 
-            pacs[pac.name] = pac
+            scouts[scout.name] = scout
 
-        return pacs
+        return scouts
 
     def schedule_repair(self, *args, **kwargs) -> None:
-        """Reject repair commands because a PAC has no repair function."""
+        """Reject repair commands because Scout has no repair function."""
 
         raise RuntimeError(
-            f"PAC {self.name} does not have repair capability."
+            f"Scout {self.name} does not have repair capability."
         )
 
     def repair(self, *args, **kwargs) -> None:
-        """Reject repair commands because a PAC has no repair function."""
+        """Reject repair commands because Scout has no repair function."""
 
         self.schedule_repair(*args, **kwargs)
 
@@ -3806,9 +3794,8 @@ class PatrolAssessmentCrew(RepairCrew):
         self.schedule_repair(*args, **kwargs)
 
 
-# Preserve the short class names used by the simulator design.
+# Preserve the short class name requested by the simulator design.
 RC = RepairCrew
-PAC = PatrolAssessmentCrew
 
 
 @dataclass
@@ -3825,7 +3812,7 @@ class DSRDashboardBackend:
     areas: Dict[str, Area] = field(default_factory=dict, init=False)
     faults: Dict[str, Fault] = field(default_factory=dict, init=False)
     repair_crews: Dict[str, RepairCrew] = field(default_factory=dict, init=False)
-    pacs: Dict[str, PatrolAssessmentCrew] = field(default_factory=dict, init=False)
+    scouts: Dict[str, Scout] = field(default_factory=dict, init=False)
     unknown_state: Optional[UnknownState] = field(default=None, init=False)
     event_id: int = field(default=0, init=False)
     time_step: int = field(default=0, init=False)
@@ -3847,9 +3834,9 @@ class DSRDashboardBackend:
 
     @property
     def mobile_units(self) -> Dict[str, RepairCrew]:
-        """Return all commandable RC and PAC units by name."""
+        """Return all commandable RC and Scout units by name."""
 
-        return {**self.repair_crews, **self.pacs}
+        return {**self.repair_crews, **self.scouts}
 
     def _path(self, file_name: str) -> Path:
         path = self.data_dir / file_name
@@ -3906,7 +3893,7 @@ class DSRDashboardBackend:
         self.current_frame = 0
 
     def _load_mobile_units(self) -> None:
-        """Load fresh RC and PAC runtime objects."""
+        """Load fresh RC and Scout runtime objects."""
 
         if self.graph is None:
             raise RuntimeError("Load the topology before mobile units.")
@@ -3915,16 +3902,16 @@ class DSRDashboardBackend:
             json_path=self._path("RepairCrews_v1.json"),
             graph=self.graph,
         )
-        self.pacs = PatrolAssessmentCrew.load_all(
-            json_path=self._path("PatrolAssessmentCrews_v1.json"),
+        self.scouts = Scout.load_all(
+            json_path=self._path("Scout_v1.json"),
             graph=self.graph,
             nodes=self.nodes,
         )
 
-        duplicate_names = set(self.repair_crews) & set(self.pacs)
+        duplicate_names = set(self.repair_crews) & set(self.scouts)
         if duplicate_names:
             raise ValueError(
-                "RC and PAC names must be unique: "
+                "RC and Scout names must be unique: "
                 + ", ".join(sorted(duplicate_names))
             )
 
@@ -4900,7 +4887,7 @@ class DSRDashboardBackend:
             f"**Static Areas:** {len(self.areas)}  \n"
             f"**Explicit Roads:** {len(self.roads)}  \n"
             f"**Repair Crews:** {len(self.repair_crews)}  \n"
-            f"**PAC units:** {len(self.pacs)}  \n"
+            f"**Scout units:** {len(self.scouts)}  \n"
             f"**Discovered active faults:** {known_faults}"
         )
 
@@ -4920,7 +4907,7 @@ class DSRDashboardBackend:
         return rows
 
     def mobile_unit_rows(self) -> list[list[str]]:
-        """Return current RC and PAC state for the dashboard table."""
+        """Return current RC and Scout state for the dashboard table."""
 
         rows: list[list[str]] = []
         for mobile_unit in self.mobile_units.values():
@@ -5080,12 +5067,10 @@ class DSRDashboardBackend:
             ])
 
         for fault in self.faults.values():
-            if not fault.is_known(self.event_id):
-                continue
             rows.append([
                 "Fault",
                 fault.name,
-                "known",
+                "known" if fault.is_known(self.event_id) else "unknown",
                 "-",
                 "active" if fault.active else "repaired",
                 ", ".join(fault.area_names),
@@ -5228,7 +5213,7 @@ class TransmissionSource:
 
 
 @dataclass
-class MPS(PatrolAssessmentCrew):
+class MPS(Scout):
     """Represent a mobile power source with movement and supply functions."""
 
     energy_capacity: float = 0.0
@@ -5478,7 +5463,7 @@ def _v23_backend_post_init(self: DSRDashboardBackend) -> None:
 
 
 def _v23_mobile_units(self: DSRDashboardBackend) -> Dict[str, RepairCrew]:
-    return {**self.repair_crews, **self.pacs, **self.mps_units}
+    return {**self.repair_crews, **self.scouts, **self.mps_units}
 
 
 def _v23_load_topology(self: DSRDashboardBackend) -> None:
@@ -5503,8 +5488,8 @@ def _v23_load_mobile_units(self: DSRDashboardBackend) -> None:
         json_path=self._path("RepairCrews_v1.json"),
         graph=self.graph,
     )
-    self.pacs = PatrolAssessmentCrew.load_all(
-        json_path=self._path("PatrolAssessmentCrews_v1.json"),
+    self.scouts = Scout.load_all(
+        json_path=self._path("Scout_v1.json"),
         graph=self.graph,
         nodes=self.nodes,
     )
@@ -5515,11 +5500,11 @@ def _v23_load_mobile_units(self: DSRDashboardBackend) -> None:
     )
     all_names = [
         *self.repair_crews,
-        *self.pacs,
+        *self.scouts,
         *self.mps_units,
     ]
     if len(all_names) != len(set(all_names)):
-        raise ValueError("RC, PAC, and MPS names must be unique.")
+        raise ValueError("RC, Scout, and MPS names must be unique.")
 
 
 def _v23_node_components(self: DSRDashboardBackend) -> list[set[str]]:
@@ -5887,7 +5872,7 @@ def _v23_execute_current_step(
     frames_per_step: int = 1,
     collect_frame_snapshots: bool = False,
 ) -> Dict[str, object]:
-    """Execute Switch commands first, then RC/PAC/MPS commands atomically."""
+    """Execute Switch commands first, then RC/Scout/MPS commands atomically."""
 
     self._require_loaded()
     if frames_per_step <= 0:
@@ -6640,7 +6625,7 @@ def _v23_game_load_map(
     result = _v23_game_base_load_map(self, render_output=False)
     self.game_score.reset()
     self.configured_unknown_regions = self.default_unknown_region_payload()
-    self.stage = "Base map loaded; configure N and unknown regions"
+    self.stage = "Base map loaded; configure N and load the file-defined scenario"
     return self.render("base_map.png") if render_output else result
 
 
@@ -6859,383 +6844,3 @@ DSRDashboardBackend.load_faults_and_unknown = _v23_game_load_faults_and_unknown
 DSRDashboardBackend.validate_switch_plan = _v23_game_validate_switch_plan
 DSRDashboardBackend.execute_current_step = _v23_game_execute_current_step
 DSRDashboardBackend.validate_command_batch = _v23_validate_command_batch
-
-# ---------------------------------------------------------------------------
-# V23-HF3 absolute-power weighted scoring and per-load continuity enforcement.
-# ---------------------------------------------------------------------------
-
-@dataclass
-class WeightedGameScore:
-    """Track cumulative weighted restored load and load continuity."""
-
-    max_time_step: int = 20
-    score: float = 0.0
-    power_history: list[float] = field(default_factory=list)
-    weighted_load_history: list[float] = field(default_factory=list)
-    energized_load_history: list[list[str]] = field(default_factory=list)
-    ever_energized_loads: set[str] = field(default_factory=set)
-    started: bool = False
-    locked: bool = False
-    ended: bool = False
-    end_reason: str = ""
-    violation_step: Optional[int] = None
-    violation_loads: list[str] = field(default_factory=list)
-    completion_step: Optional[int] = None
-    projected_steps: int = 0
-
-    def __post_init__(self) -> None:
-        self.configure(self.max_time_step)
-
-    def configure(self, max_time_step: int) -> None:
-        """Set the maximum completed time step for a new game."""
-
-        if isinstance(max_time_step, bool):
-            raise ValueError("Maximum time step N must be a positive integer.")
-        try:
-            normalized = int(max_time_step)
-        except (TypeError, ValueError) as error:
-            raise ValueError(
-                "Maximum time step N must be a positive integer."
-            ) from error
-        if normalized < 1:
-            raise ValueError("Maximum time step N must be at least 1.")
-        self.max_time_step = normalized
-
-    @staticmethod
-    def _normalize_load_names(load_names: Optional[Iterable[str]]) -> list[str]:
-        """Return sorted unique load names for deterministic state output."""
-
-        if load_names is None:
-            return []
-        return sorted({str(name) for name in load_names})
-
-    def reset(self) -> None:
-        """Reset runtime score data while preserving the configured N."""
-
-        self.score = 0.0
-        self.power_history = []
-        self.weighted_load_history = []
-        self.energized_load_history = []
-        self.ever_energized_loads = set()
-        self.started = False
-        self.locked = False
-        self.ended = False
-        self.end_reason = ""
-        self.violation_step = None
-        self.violation_loads = []
-        self.completion_step = None
-        self.projected_steps = 0
-
-    def start(
-        self,
-        restored_active_power: float,
-        energized_loads: Optional[Iterable[str]] = None,
-        weighted_restored_load: Optional[float] = None,
-    ) -> None:
-        """Start a game and count the weighted T0 contribution immediately."""
-
-        self.reset()
-        active_power = float(restored_active_power)
-        weighted_value = (
-            active_power
-            if weighted_restored_load is None
-            else float(weighted_restored_load)
-        )
-        current_loads = self._normalize_load_names(energized_loads)
-        self.power_history = [active_power]
-        self.weighted_load_history = [weighted_value]
-        self.energized_load_history = [current_loads]
-        self.ever_energized_loads = set(current_loads)
-        self.score = weighted_value
-        self.started = True
-
-    def record(
-        self,
-        time_step: int,
-        restored_active_power: float,
-        energized_loads: Optional[Iterable[str]] = None,
-        weighted_restored_load: Optional[float] = None,
-    ) -> None:
-        """Record one step and lock the score if any restored load loses power."""
-
-        if not self.started:
-            raise RuntimeError("Load a fault scenario before scoring a step.")
-        if self.ended:
-            raise RuntimeError("The game has already ended.")
-
-        time_step = int(time_step)
-        active_power = float(restored_active_power)
-        weighted_value = (
-            active_power
-            if weighted_restored_load is None
-            else float(weighted_restored_load)
-        )
-        current_loads = self._normalize_load_names(energized_loads)
-        current_load_set = set(current_loads)
-
-        self.power_history.append(active_power)
-        self.weighted_load_history.append(weighted_value)
-        self.energized_load_history.append(current_loads)
-
-        lost_loads = sorted(self.ever_energized_loads - current_load_set)
-        self.ever_energized_loads.update(current_load_set)
-
-        if self.locked:
-            return
-
-        if lost_loads:
-            self.score = 0.0
-            self.locked = True
-            self.violation_step = time_step
-            self.violation_loads = lost_loads
-            return
-
-        self.score += weighted_value
-
-    def finish_at_limit(self, time_step: int) -> None:
-        """Finish normally when the maximum time step is reached."""
-
-        self.ended = True
-        self.completion_step = int(time_step)
-        self.end_reason = "Maximum time step reached"
-
-    def finish_early(
-        self,
-        time_step: int,
-        fully_restored_active_power: float,
-        fully_restored_weighted_load: Optional[float] = None,
-    ) -> None:
-        """Project the fully restored weighted load through N and end."""
-
-        time_step = int(time_step)
-        remaining_steps = max(0, self.max_time_step - time_step)
-        weighted_value = (
-            float(fully_restored_active_power)
-            if fully_restored_weighted_load is None
-            else float(fully_restored_weighted_load)
-        )
-        if not self.locked:
-            self.score += remaining_steps * weighted_value
-        self.projected_steps = remaining_steps
-        self.ended = True
-        self.completion_step = time_step
-        self.end_reason = "All faults cleared and all loads restored"
-
-    @property
-    def current_power(self) -> float:
-        """Return the latest unweighted restored active power."""
-
-        return self.power_history[-1] if self.power_history else 0.0
-
-    @property
-    def current_weighted_load(self) -> float:
-        """Return the latest sum of absolute P multiplied by load weight."""
-
-        return (
-            self.weighted_load_history[-1]
-            if self.weighted_load_history
-            else 0.0
-        )
-
-    @property
-    def status(self) -> str:
-        """Return a compact human-readable game status."""
-
-        if self.ended:
-            return "Completed"
-        if self.locked:
-            return "Score locked at zero"
-        if self.started:
-            return "Running"
-        return "Ready"
-
-    def to_payload(self) -> Dict[str, object]:
-        """Return a JSON-serializable weighted score snapshot."""
-
-        return {
-            "max_time_step": self.max_time_step,
-            "score": self.score,
-            "power_history": list(self.power_history),
-            "weighted_load_history": list(self.weighted_load_history),
-            "energized_load_history": [
-                list(loads) for loads in self.energized_load_history
-            ],
-            "ever_energized_loads": sorted(self.ever_energized_loads),
-            "current_power": self.current_power,
-            "current_weighted_load": self.current_weighted_load,
-            "started": self.started,
-            "locked": self.locked,
-            "ended": self.ended,
-            "status": self.status,
-            "end_reason": self.end_reason,
-            "violation_step": self.violation_step,
-            "violation_loads": list(self.violation_loads),
-            "completion_step": self.completion_step,
-            "projected_steps": self.projected_steps,
-            "score_basis": "sum_over_time(sum_over_energized_loads(abs(P)*W))",
-            "continuity_rule": (
-                "Once a load is energized at a completed time step, it must "
-                "remain energized at every later completed time step."
-            ),
-        }
-
-
-# Preserve the public class name used by tests and external imports.
-GameScore = WeightedGameScore
-
-
-def _hf2_energized_load_names(self: DSRDashboardBackend) -> list[str]:
-    """Return names of load-bearing Nodes that are currently energized."""
-
-    return sorted(
-        node.name
-        for node in self.nodes.values()
-        if node.has_load and node.energized
-    )
-
-
-def _hf2_weighted_restored_load(self: DSRDashboardBackend) -> float:
-    """Return the current scoring contribution sum(abs(P) times W)."""
-
-    return float(sum(
-        abs(node.active_power) * node.load_weight
-        for node in self.nodes.values()
-        if node.has_load and node.energized
-    ))
-
-
-def _hf2_total_weighted_load(self: DSRDashboardBackend) -> float:
-    """Return sum(abs(P) times W) for every configured load."""
-
-    return float(sum(
-        abs(node.active_power) * node.load_weight
-        for node in self.nodes.values()
-        if node.has_load
-    ))
-
-
-def _hf2_game_payload(self: DSRDashboardBackend) -> Dict[str, object]:
-    """Return weighted score, load continuity, and completion state."""
-
-    payload = self.game_score.to_payload()
-    payload.update({
-        "time_step": self.time_step,
-        "restored_active_power": self.restored_active_power(),
-        "weighted_restored_load": self.weighted_restored_load(),
-        "total_active_load": self.total_active_load(),
-        "total_weighted_load": self.total_weighted_load(),
-        "energized_loads": self.energized_load_names(),
-        "all_faults_cleared": self.all_faults_cleared(),
-        "all_loads_restored": self.all_loads_restored(),
-        "commands_enabled": self.game_score.started and not self.game_score.ended,
-    })
-    return payload
-
-
-_hf2_previous_load_faults_and_unknown = DSRDashboardBackend.load_faults_and_unknown
-
-
-def _hf2_load_faults_and_unknown(
-    self: DSRDashboardBackend,
-    render_output: bool = True,
-    unknown_regions: Optional[list[Dict[str, object]]] = None,
-) -> str:
-    """Load a scenario and initialize weighted scoring at T0."""
-
-    result = _hf2_previous_load_faults_and_unknown(
-        self,
-        render_output=render_output,
-        unknown_regions=unknown_regions,
-    )
-
-    self.game_score.start(
-        restored_active_power=self.restored_active_power(),
-        energized_loads=self.energized_load_names(),
-        weighted_restored_load=self.weighted_restored_load(),
-    )
-    self.stage = "Weighted scored fault scenario loaded at time step 0"
-
-    if self.all_faults_cleared() and self.all_loads_restored():
-        self.game_score.finish_early(
-            time_step=0,
-            fully_restored_active_power=self.total_active_load(),
-            fully_restored_weighted_load=self.total_weighted_load(),
-        )
-        self.stage = "Game completed automatically at time step 0"
-
-    return result
-
-
-def _hf2_execute_current_step(
-    self: DSRDashboardBackend,
-    mobile_commands: Dict[str, Dict[str, object]],
-    switch_operations: list[tuple[str, str]] | list[list[str]],
-    frames_per_step: int = 1,
-    collect_frame_snapshots: bool = False,
-) -> Dict[str, object]:
-    """Execute one atomic step and apply weighted load-continuity scoring."""
-
-    if not self.game_score.started:
-        raise RuntimeError("Load the fault scenario before issuing commands.")
-    if self.game_score.ended:
-        raise RuntimeError(
-            "The game has ended. Load the base map to start again."
-        )
-    if self.time_step >= self.game_score.max_time_step:
-        self.game_score.finish_at_limit(self.time_step)
-        raise RuntimeError("The maximum time step has already been reached.")
-
-    result = _v23_game_base_execute_current_step(
-        self,
-        mobile_commands=mobile_commands,
-        switch_operations=switch_operations,
-        frames_per_step=frames_per_step,
-        collect_frame_snapshots=collect_frame_snapshots,
-    )
-
-    self.game_score.record(
-        time_step=self.time_step,
-        restored_active_power=self.restored_active_power(),
-        energized_loads=self.energized_load_names(),
-        weighted_restored_load=self.weighted_restored_load(),
-    )
-
-    if (
-        self.all_faults_cleared()
-        and self.all_loads_restored()
-        and self.time_step < self.game_score.max_time_step
-    ):
-        self.game_score.finish_early(
-            time_step=self.time_step,
-            fully_restored_active_power=self.total_active_load(),
-            fully_restored_weighted_load=self.total_weighted_load(),
-        )
-        self.stage = (
-            f"Game completed early at time step {self.time_step}; "
-            f"weighted score projected through step "
-            f"{self.game_score.max_time_step}"
-        )
-    elif self.time_step >= self.game_score.max_time_step:
-        self.game_score.finish_at_limit(self.time_step)
-        self.stage = (
-            f"Game ended at maximum time step "
-            f"{self.game_score.max_time_step}"
-        )
-    elif self.game_score.locked:
-        lost_text = ", ".join(self.game_score.violation_loads) or "unknown"
-        self.stage = (
-            f"Time step {self.time_step} completed; previously energized "
-            f"load(s) {lost_text} lost power and the score is permanently "
-            "locked at zero"
-        )
-
-    result["game"] = self.game_payload()
-    return result
-
-
-DSRDashboardBackend.energized_load_names = _hf2_energized_load_names
-DSRDashboardBackend.weighted_restored_load = _hf2_weighted_restored_load
-DSRDashboardBackend.total_weighted_load = _hf2_total_weighted_load
-DSRDashboardBackend.game_payload = _hf2_game_payload
-DSRDashboardBackend.load_faults_and_unknown = _hf2_load_faults_and_unknown
-DSRDashboardBackend.execute_current_step = _hf2_execute_current_step
