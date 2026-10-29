@@ -1,0 +1,13 @@
+{
+  "MPSUnits": [
+    {
+      "name": "MPS1",
+      "initial_node": "B1",
+      "energy_kwh": 750.0,
+      "P_limit": 500,
+      "S_limit": 650,
+      "move_speed": 4,
+      "inspection_range": 1
+    }
+  ]
+}

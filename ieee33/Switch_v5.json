@@ -1,0 +1,121 @@
+{
+  "Switches": [
+    {
+      "name": "S_SOURCE",
+      "line": "L_1_2",
+      "node": "B1",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "RCS_6_7",
+      "line": "L_6_7",
+      "node": "B6",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "RCS_2_19",
+      "line": "L_2_19",
+      "node": "B2",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "MS_3_23",
+      "line": "L_3_23",
+      "node": "B3",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "manual",
+      "operation_time_min": 5.0
+    },
+    {
+      "name": "MS_6_26",
+      "line": "L_6_26",
+      "node": "B6",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "manual",
+      "operation_time_min": 5.0
+    },
+    {
+      "name": "RCS_10_11",
+      "line": "L_10_11",
+      "node": "B10",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "MS_24_25",
+      "line": "L_24_25",
+      "node": "B24",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "manual",
+      "operation_time_min": 5.0
+    },
+    {
+      "name": "RCS_30_31",
+      "line": "L_30_31",
+      "node": "B30",
+      "state": "closed",
+      "label_position": 6,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "SW_TIE_8_21",
+      "line": "TIE_8_21",
+      "node": "B8",
+      "state": "opened",
+      "label_position": 4,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "SW_TIE_9_15",
+      "line": "TIE_9_15",
+      "node": "B9",
+      "state": "opened",
+      "label_position": 4,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "SW_TIE_12_22",
+      "line": "TIE_12_22",
+      "node": "B12",
+      "state": "opened",
+      "label_position": 4,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "SW_TIE_18_33",
+      "line": "TIE_18_33",
+      "node": "B18",
+      "state": "opened",
+      "label_position": 4,
+      "operation_type": "remote",
+      "operation_time_min": 0.0
+    },
+    {
+      "name": "SW_TIE_25_29",
+      "line": "TIE_25_29",
+      "node": "B25",
+      "state": "opened",
+      "label_position": 4,
+      "operation_type": "manual",
+      "operation_time_min": 5.0
+    }
+  ]
+}

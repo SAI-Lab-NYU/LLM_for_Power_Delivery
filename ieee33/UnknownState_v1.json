@@ -1,0 +1,41 @@
+{
+  "event_id": 0,
+  "default_inspected": true,
+  "unknown_regions": [
+    {
+      "name": "Unknown_Z2",
+      "lower_left": [
+        5,
+        -19
+      ],
+      "upper_right": [
+        54,
+        29
+      ]
+    },
+    {
+      "name": "Unknown_Z4",
+      "lower_left": [
+        -23,
+        -19
+      ],
+      "upper_right": [
+        -19,
+        3
+      ]
+    },
+    {
+      "name": "Unknown_Z5",
+      "lower_left": [
+        -2,
+        -19
+      ],
+      "upper_right": [
+        36,
+        6
+      ]
+    }
+  ],
+  "open_switches_in_unknown_regions": true,
+  "open_switches_adjacent_to_unknown_areas": true
+}

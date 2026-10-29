@@ -1,0 +1,7 @@
+{
+  "TransmissionSource": {
+    "name": "IEEE33 Substation",
+    "node": "B1",
+    "restoration_time_step": 0
+  }
+}

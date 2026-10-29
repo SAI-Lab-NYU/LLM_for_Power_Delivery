@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IEEE 33-Bus DSR Grid Map</title>
+  <style>
+    :root{--page:#f5f6f8;--panel:#fff;--border:#d9dde3;--text:#202832;--muted:#65717f;--blue:#245f9f;--blue-dark:#194b7d;--green:#218148;--red:#b9443f;--gold:#cdb98d}
+    *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--text);font:13px/1.4 Inter,Segoe UI,Arial,sans-serif;letter-spacing:0}button,select,input{font:inherit}button{border:1px solid var(--border);border-radius:5px;background:#fff;color:var(--text);padding:7px 10px;cursor:pointer}button:hover:not(:disabled){border-color:var(--blue)}button:disabled{opacity:.47;cursor:not-allowed}.primary{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:700}.primary:hover:not(:disabled){background:var(--blue-dark)}
+    header{display:flex;align-items:center;gap:9px;padding:10px 16px;border-bottom:1px solid var(--border);background:#fff}header h1{margin:0 auto 0 0;font-size:20px;line-height:1.2}header button{white-space:nowrap}
+    .message{margin:10px 14px 0;padding:9px 12px;border:1px solid #b8dac3;border-radius:5px;background:#f4fbf6;color:#246d43;min-height:38px}.message.error{border-color:#e5bcbc;background:#fff7f7;color:#a92d2d}
+    .layout{display:grid;grid-template-columns:270px minmax(580px,1fr) 400px;align-items:start;gap:10px;padding:10px 12px 18px}.panel{min-width:0;background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden}.panel-title{margin:0;padding:10px 12px;border-bottom:1px solid var(--border);font-size:15px;font-weight:700}.left,.right{max-height:calc(100vh - 116px);overflow-y:auto}.summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}.metric{min-width:0;min-height:61px;padding:8px;border:1px solid var(--border);border-radius:5px;background:#fafbfd}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;margin-top:3px;font-size:16px;line-height:1.2;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .section{border-top:1px solid var(--border)}.section h3{margin:0;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}.section-content{padding:8px 10px}.unit-status{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:8px 11px;border-bottom:1px solid var(--border)}.unit-status:last-child{border-bottom:0}.unit-status strong{font-size:13px}.unit-status small{color:var(--muted);font-size:10px}.unit-status .glyph{color:#7a8995;margin-right:5px}.status-table{width:100%;border-collapse:collapse;font-size:11px}.status-table th,.status-table td{border:1px solid var(--border);padding:5px;text-align:left}.status-table th{background:#f2f5f8}.status-table-wrap{padding:8px 10px;overflow:auto}.events{list-style:none;margin:0;padding:0;max-height:180px;overflow:auto}.events li{padding:6px 0;border-bottom:1px solid #e9eef0;font-size:11px}.events time{color:var(--muted)}
+    .map-header{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 11px;border-bottom:1px solid var(--border)}.map-header h2{margin:0;font-size:14px}.layers{display:flex;border:1px solid var(--border);border-radius:5px;overflow:hidden}.layers button{border:0;border-right:1px solid var(--border);border-radius:0;padding:5px 8px;font-size:11px}.layers button:last-child{border-right:0}.layers button[aria-pressed=true]{background:#e9f0f9;color:#214f84;font-weight:700}.map-wrap{position:relative}.map{display:block;width:100%;height:min(740px,calc(100vh - 190px));min-height:530px;background:#fff}.map-note{padding:8px 10px;border-top:1px solid var(--border);color:var(--muted);font-size:11px}.map-legend{position:absolute;left:10px;bottom:11px;display:flex;flex-wrap:wrap;gap:8px;padding:5px 7px;border:1px solid var(--border);border-radius:4px;background:#fffffff2;font-size:10px;color:var(--muted)}.map-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:3px}.inspector{border-top:1px solid var(--border);padding:9px 12px;background:#fbfcfd;font-size:11px}.inspector strong{display:block;font-size:12px}.inspector span{color:var(--muted)}
+    .execute{display:grid;gap:7px;padding:10px 11px;border-bottom:1px solid var(--border)}.execute button{width:100%}.small-note{color:var(--muted);font-size:11px;line-height:1.4}.command-section{padding:10px 11px;border-bottom:1px solid var(--border)}.command-section h3{margin:0 0 8px;font-size:13px}.switch-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.switch-card{min-width:0;padding:6px 4px;border:1px solid var(--border);border-radius:5px;text-align:center}.switch-card strong{display:block;font-size:11px;overflow-wrap:anywhere}.chip{display:inline-block;margin:3px 0;padding:1px 6px;border-radius:10px;background:#e9f5ec;color:#206a3a;font-size:10px;font-weight:700}.chip.opened{background:#fdecec;color:#a33232}.switch-card button{width:100%;padding:4px 2px;font-size:10px}.switch-card.pending{border-color:var(--blue);background:#f3f8fd}.validate-row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px;margin-top:9px}.validate-row span{font-size:10px;color:var(--muted)}.crew-card{padding:10px;border:1px solid var(--border);border-radius:5px;margin-bottom:8px}.crew-head{display:flex;justify-content:space-between;gap:6px}.crew-head strong{font-size:13px}.crew-head span{color:var(--muted);font-size:11px}.crew-meta{margin:4px 0 9px;color:var(--muted);font-size:11px}.mode-row{display:flex;flex-wrap:wrap;gap:4px}.mode-row button{padding:5px 7px;font-size:11px}.mode-row button[aria-pressed=true]{background:#e9f0f9;color:#214f84;border-color:#97b5d6;font-weight:700}.target-row{display:flex;align-items:center;gap:6px;margin-top:8px}.target-row select{flex:1;min-width:0;padding:5px;border:1px solid var(--border);border-radius:4px;background:#fff}.target-row button{flex:none}.pending-label{margin-top:7px;padding:5px 6px;background:#edf2f6;color:#3f5363;border-radius:4px;font-size:10px}
+    @media(max-width:1420px){.layout{grid-template-columns:230px minmax(490px,1fr) 330px}.switch-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:1100px){.layout{grid-template-columns:240px minmax(0,1fr)}.right{grid-column:1/-1;max-height:none}.switch-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:760px){header{flex-wrap:wrap}header h1{width:100%}.layout{grid-template-columns:1fr}.left,.right{max-height:none}.map{height:520px;min-height:0}}@media(max-width:480px){.switch-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.map-header{align-items:flex-start;flex-direction:column}.map{height:430px}.map-legend{max-width:calc(100% - 20px)}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DSR Grid Map v23 · IEEE 33 Bus</h1>
+    <button id="text-interface" type="button">Text Interface</button>
+    <button id="load-base" type="button">Load Base Map</button>
+    <button id="reset-scenario" type="button">Reset Fault Scenario</button>
+    <button id="execute-step" class="primary" type="button">Execute Current Step</button>
+  </header>
+  <div id="message" class="message" role="status"></div>
+  <main class="layout">
+    <section class="panel left" aria-label="Simulator Status">
+      <h2 class="panel-title">Simulator Status</h2>
+      <div class="summary-grid">
+        <div class="metric"><span>Time Step</span><strong id="step-value">0</strong></div>
+        <div class="metric"><span>Event ID</span><strong id="event-value">0</strong></div>
+        <div class="metric"><span>Discovered Faults</span><strong id="fault-value">0</strong></div>
+        <div class="metric"><span>Energized P</span><strong id="power-value">0</strong></div>
+        <div class="metric"><span>Weighted Energized P</span><strong id="weighted-value">0</strong></div>
+        <div class="metric"><span>Grid Status</span><strong id="grid-value">Available</strong></div>
+        <div class="metric"><span>Grid P/Q</span><strong id="pq-value">0/0</strong></div>
+      </div>
+      <div class="section"><h3>OBJECT STATES (4)</h3><div id="unit-states"></div></div>
+      <div class="section"><h3>Power Sources (1)</h3><div class="status-table-wrap"><table class="status-table"><thead><tr><th>Source</th><th>Node</th><th>Status</th></tr></thead><tbody><tr><td>Transmission Grid</td><td>B1</td><td id="source-status">Available</td></tr></tbody></table></div></div>
+      <div class="section"><h3>MPS States (1)</h3><div class="status-table-wrap"><table class="status-table"><thead><tr><th>Unit</th><th>State</th><th>Position</th><th>Energy</th></tr></thead><tbody><tr><td>MPS1</td><td id="mps-status">Idle</td><td id="mps-position">B1</td><td id="mps-energy">750 kWh</td></tr></tbody></table></div></div>
+      <div class="section"><h3>Zones (8)</h3><div class="status-table-wrap"><table class="status-table"><thead><tr><th>Zone</th><th>Load</th><th>Inspected</th><th>Supply</th></tr></thead><tbody id="zone-status"></tbody></table></div></div>
+      <div class="section"><h3>Events</h3><div class="section-content"><ol class="events" id="events"></ol></div></div>
+    </section>
+    <section class="panel map-panel" aria-label="DSR Grid Map">
+      <div class="map-header"><h2>DSR Grid Map</h2><div class="layers" id="layers" aria-label="Map layers"><button data-layer="roads" type="button">Road Network</button><button data-layer="grid" type="button">Electrical Grid</button><button data-layer="combined" type="button" aria-pressed="true">Combined</button></div></div>
+      <div class="map-wrap"><svg id="map" class="map" viewBox="0 0 1100 700" role="img" aria-label="IEEE 33-bus map"></svg><div class="map-legend"><span><i style="background:#cdb98d;width:13px;height:7px;border-radius:2px"></i>Fast road</span><span><i style="background:#e3d8bb;width:13px;height:4px;border-radius:2px"></i>Road</span><span><i style="background:#218148"></i>Grid</span><span><i style="background:#238d98"></i>MPS</span><span><i style="background:#b9443f"></i>Open or faulted</span><span><i style="background:#8158a5"></i>PAC</span></div></div>
+      <div class="inspector"><strong>Pixel Inspector</strong><span id="pixel-readout">Move the mouse over the map.</span></div>
+      <div class="map-note">Synthetic coordinates and roads. Electrical topology and loads follow the IEEE 33-bus case.</div>
+    </section>
+    <section class="panel right" aria-label="Current-Step Commands">
+      <h2 class="panel-title">Current-Step Commands</h2>
+      <div class="execute"><button class="primary" id="execute-step-side" type="button">Execute Current Step</button><button id="download-commands" type="button">Download Pending Commands JSON</button><div class="small-note">Switch and unit commands are validated together. The map updates after one 5 min step.</div></div>
+      <section class="command-section"><h3>Switch Commands</h3><div id="switch-commands" class="switch-grid"></div><div class="validate-row"><button id="validate-switches" type="button">Validate Switch Plan</button><span id="switch-validation">Set provisional remote switch actions before executing.</span></div></section>
+      <section class="command-section"><h3>Object Commands</h3><div id="mobile-commands"></div></section>
+    </section>
+  </main>
+  <script id="sim-data" type="application/json">{"title":"IEEE 33-Bus Standalone Simulator Demo","subtitle":"Manual simulation sandbox \u00b7 no optimizer or precomputed results","metadata":{"buses":33,"radial_branches":32,"tie_lines":5,"zones":8,"switches":13,"repair_crews":2,"scotts":1,"mps_units":1,"faults":3,"total_p_kw":3715,"total_q_kvar":2300},"nodes":[{"name":"B1","position":[-30,8],"type":"transmission","load":null,"zone":"Z1"},{"name":"B2","position":[-28,8],"type":"distribution","load":[100,60,1.0],"zone":"Z1"},{"name":"B3","position":[-22,8],"type":"distribution","load":[90,40,1.0],"zone":"Z1"},{"name":"B4","position":[-17,8],"type":"distribution","load":[120,80,1.0],"zone":"Z1"},{"name":"B5","position":[-12,8],"type":"distribution","load":[60,30,1.0],"zone":"Z1"},{"name":"B6","position":[-1,8],"type":"distribution","load":[60,20,1.0],"zone":"Z1"},{"name":"B7","position":[6,8],"type":"distribution","load":[200,100,1.0],"zone":"Z2A"},{"name":"B8","position":[14,8],"type":"distribution","load":[200,100,5.0],"zone":"Z2A"},{"name":"B9","position":[26,8],"type":"distribution","load":[60,20,1.0],"zone":"Z2A"},{"name":"B10","position":[26,20],"type":"distribution","load":[60,20,1.0],"zone":"Z2A"},{"name":"B11","position":[26,23],"type":"distribution","load":[45,30,1.0],"zone":"Z2B"},{"name":"B12","position":[26,28],"type":"distribution","load":[60,35,1.0],"zone":"Z2B"},{"name":"B13","position":[44,28],"type":"distribution","load":[60,35,1.0],"zone":"Z2B"},{"name":"B14","position":[44,19],"type":"distribution","load":[120,80,1.0],"zone":"Z2B"},{"name":"B15","position":[44,11],"type":"distribution","load":[60,10,1.0],"zone":"Z2B"},{"name":"B16","position":[44,2],"type":"distribution","load":[60,20,1.0],"zone":"Z2B"},{"name":"B17","position":[44,-18],"type":"distribution","load":[60,20,1.0],"zone":"Z2B"},{"name":"B18","position":[53,-18],"type":"distribution","load":[90,40,1.0],"zone":"Z2B"},{"name":"B19","position":[-28,11],"type":"distribution","load":[90,40,1.0],"zone":"Z3"},{"name":"B20","position":[-24,26],"type":"distribution","load":[90,40,1.0],"zone":"Z3"},{"name":"B21","position":[-17,26],"type":"distribution","load":[90,40,1.0],"zone":"Z3"},{"name":"B22","position":[-6,26],"type":"distribution","load":[90,40,1.0],"zone":"Z3"},{"name":"B23","position":[-22,2],"type":"distribution","load":[90,50,1.0],"zone":"Z4A"},{"name":"B24","position":[-20,-7],"type":"distribution","load":[420,200,5.0],"zone":"Z4A"},{"name":"B25","position":[-20,-18],"type":"distribution","load":[420,200,1.0],"zone":"Z4B"},{"name":"B26","position":[-1,5],"type":"distribution","load":[60,25,1.0],"zone":"Z5A"},{"name":"B27","position":[-1,1],"type":"distribution","load":[60,25,1.0],"zone":"Z5A"},{"name":"B28","position":[2,-10],"type":"distribution","load":[60,20,1.0],"zone":"Z5A"},{"name":"B29","position":[4,-18],"type":"distribution","load":[120,70,1.0],"zone":"Z5A"},{"name":"B30","position":[10,-18],"type":"distribution","load":[200,600,5.0],"zone":"Z5A"},{"name":"B31","position":[23,-18],"type":"distribution","load":[150,70,1.0],"zone":"Z5B"},{"name":"B32","position":[28,-18],"type":"distribution","load":[210,100,1.0],"zone":"Z5B"},{"name":"B33","position":[35,-18],"type":"distribution","load":[60,40,1.0],"zone":"Z5B"}],"lines":[{"name":"L_1_2","from":"B1","to":"B2","route":[[-30,8],[-28,8]],"physical_route":[[-30,8],[-28,8]],"length":2,"zone":"Z1","tie":false,"impedance":{"r_ohm":0.0922,"x_ohm":0.047,"z_magnitude_ohm":0.103488,"mapped_length_pixels":2}},{"name":"L_2_3","from":"B2","to":"B3","route":[[-28,8],[-22,8]],"physical_route":[[-28,8],[-22,8]],"length":6,"zone":"Z1","tie":false,"impedance":{"r_ohm":0.493,"x_ohm":0.2511,"z_magnitude_ohm":0.553263,"mapped_length_pixels":6}},{"name":"L_3_4","from":"B3","to":"B4","route":[[-22,8],[-17,8]],"physical_route":[[-22,8],[-17,8]],"length":5,"zone":"Z1","tie":false,"impedance":{"r_ohm":0.366,"x_ohm":0.1864,"z_magnitude_ohm":0.410732,"mapped_length_pixels":5}},{"name":"L_4_5","from":"B4","to":"B5","route":[[-17,8],[-12,8]],"physical_route":[[-17,8],[-12,8]],"length":5,"zone":"Z1","tie":false,"impedance":{"r_ohm":0.3811,"x_ohm":0.1941,"z_magnitude_ohm":0.427682,"mapped_length_pixels":5}},{"name":"L_5_6","from":"B5","to":"B6","route":[[-12,8],[-1,8]],"physical_route":[[-12,8],[-1,8]],"length":11,"zone":"Z1","tie":false,"impedance":{"r_ohm":0.819,"x_ohm":0.707,"z_magnitude_ohm":1.081947,"mapped_length_pixels":11}},{"name":"L_6_7","from":"B6","to":"B7","route":[[-1,8],[6,8]],"physical_route":[[-1,8],[6,8]],"length":7,"zone":"Z2A","tie":false,"impedance":{"r_ohm":0.1872,"x_ohm":0.6188,"z_magnitude_ohm":0.646496,"mapped_length_pixels":7}},{"name":"L_7_8","from":"B7","to":"B8","route":[[6,8],[14,8]],"physical_route":[[6,8],[14,8]],"length":8,"zone":"Z2A","tie":false,"impedance":{"r_ohm":0.7114,"x_ohm":0.2351,"z_magnitude_ohm":0.749241,"mapped_length_pixels":8}},{"name":"L_8_9","from":"B8","to":"B9","route":[[14,8],[26,8]],"physical_route":[[14,8],[26,8]],"length":12,"zone":"Z2A","tie":false,"impedance":{"r_ohm":1.03,"x_ohm":0.74,"z_magnitude_ohm":1.268267,"mapped_length_pixels":12}},{"name":"L_9_10","from":"B9","to":"B10","route":[[26,8],[26,20]],"physical_route":[[26,8],[26,20]],"length":12,"zone":"Z2A","tie":false,"impedance":{"r_ohm":1.044,"x_ohm":0.74,"z_magnitude_ohm":1.279662,"mapped_length_pixels":12}},{"name":"L_10_11","from":"B10","to":"B11","route":[[26,20],[26,23]],"physical_route":[[26,20],[26,23]],"length":3,"zone":"Z2B","tie":false,"impedance":{"r_ohm":0.1966,"x_ohm":0.065,"z_magnitude_ohm":0.207067,"mapped_length_pixels":3}},{"name":"L_11_12","from":"B11","to":"B12","route":[[26,23],[26,28]],"physical_route":[[26,23],[26,28]],"length":5,"zone":"Z2B","tie":false,"impedance":{"r_ohm":0.3744,"x_ohm":0.1238,"z_magnitude_ohm":0.394337,"mapped_length_pixels":5}},{"name":"L_12_13","from":"B12","to":"B13","route":[[26,28],[44,28]],"physical_route":[[26,28],[44,28]],"length":18,"zone":"Z2B","tie":false,"impedance":{"r_ohm":1.468,"x_ohm":1.155,"z_magnitude_ohm":1.8679,"mapped_length_pixels":18}},{"name":"L_13_14","from":"B13","to":"B14","route":[[44,28],[44,19]],"physical_route":[[44,28],[44,19]],"length":9,"zone":"Z2B","tie":false,"impedance":{"r_ohm":0.5416,"x_ohm":0.7129,"z_magnitude_ohm":0.895297,"mapped_length_pixels":9}},{"name":"L_14_15","from":"B14","to":"B15","route":[[44,19],[44,11]],"physical_route":[[44,19],[44,11]],"length":8,"zone":"Z2B","tie":false,"impedance":{"r_ohm":0.591,"x_ohm":0.526,"z_magnitude_ohm":0.791174,"mapped_length_pixels":8}},{"name":"L_15_16","from":"B15","to":"B16","route":[[44,11],[44,2]],"physical_route":[[44,11],[44,2]],"length":9,"zone":"Z2B","tie":false,"impedance":{"r_ohm":0.7463,"x_ohm":0.545,"z_magnitude_ohm":0.924115,"mapped_length_pixels":9}},{"name":"L_16_17","from":"B16","to":"B17","route":[[44,2],[44,-18]],"physical_route":[[44,2],[44,-18]],"length":20,"zone":"Z2B","tie":false,"impedance":{"r_ohm":1.289,"x_ohm":1.721,"z_magnitude_ohm":2.1502,"mapped_length_pixels":20}},{"name":"L_17_18","from":"B17","to":"B18","route":[[44,-18],[53,-18]],"physical_route":[[44,-18],[53,-18]],"length":9,"zone":"Z2B","tie":false,"impedance":{"r_ohm":0.732,"x_ohm":0.574,"z_magnitude_ohm":0.930215,"mapped_length_pixels":9}},{"name":"L_2_19","from":"B2","to":"B19","route":[[-28,8],[-28,11]],"physical_route":[[-28,8],[-28,11]],"length":3,"zone":"Z3","tie":false,"impedance":{"r_ohm":0.164,"x_ohm":0.1565,"z_magnitude_ohm":0.22669,"mapped_length_pixels":3}},{"name":"L_19_20","from":"B19","to":"B20","route":[[-28,11],[-24,11],[-24,26]],"physical_route":[[-28,11],[-24,11],[-24,26]],"length":19,"zone":"Z3","tie":false,"impedance":{"r_ohm":1.5042,"x_ohm":1.3554,"z_magnitude_ohm":2.024778,"mapped_length_pixels":19}},{"name":"L_20_21","from":"B20","to":"B21","route":[[-24,26],[-17,26]],"physical_route":[[-24,26],[-17,26]],"length":7,"zone":"Z3","tie":false,"impedance":{"r_ohm":0.4095,"x_ohm":0.4784,"z_magnitude_ohm":0.629728,"mapped_length_pixels":7}},{"name":"L_21_22","from":"B21","to":"B22","route":[[-17,26],[-6,26]],"physical_route":[[-17,26],[-6,26]],"length":11,"zone":"Z3","tie":false,"impedance":{"r_ohm":0.7089,"x_ohm":0.9373,"z_magnitude_ohm":1.17519,"mapped_length_pixels":11}},{"name":"L_3_23","from":"B3","to":"B23","route":[[-22,8],[-22,2]],"physical_route":[[-22,8],[-22,2]],"length":6,"zone":"Z4A","tie":false,"impedance":{"r_ohm":0.4512,"x_ohm":0.3083,"z_magnitude_ohm":0.546471,"mapped_length_pixels":6}},{"name":"L_23_24","from":"B23","to":"B24","route":[[-22,2],[-22,-7],[-20,-7]],"physical_route":[[-22,2],[-22,-7],[-20,-7]],"length":11,"zone":"Z4A","tie":false,"impedance":{"r_ohm":0.898,"x_ohm":0.7091,"z_magnitude_ohm":1.144214,"mapped_length_pixels":11}},{"name":"L_24_25","from":"B24","to":"B25","route":[[-20,-7],[-20,-18]],"physical_route":[[-20,-7],[-20,-18]],"length":11,"zone":"Z4B","tie":false,"impedance":{"r_ohm":0.896,"x_ohm":0.7011,"z_magnitude_ohm":1.137698,"mapped_length_pixels":11}},{"name":"L_6_26","from":"B6","to":"B26","route":[[-1,8],[-1,5]],"physical_route":[[-1,8],[-1,5]],"length":3,"zone":"Z5A","tie":false,"impedance":{"r_ohm":0.203,"x_ohm":0.1034,"z_magnitude_ohm":0.227817,"mapped_length_pixels":3}},{"name":"L_26_27","from":"B26","to":"B27","route":[[-1,5],[-1,1]],"physical_route":[[-1,5],[-1,1]],"length":4,"zone":"Z5A","tie":false,"impedance":{"r_ohm":0.2842,"x_ohm":0.1447,"z_magnitude_ohm":0.318916,"mapped_length_pixels":4}},{"name":"L_27_28","from":"B27","to":"B28","route":[[-1,1],[2,1],[2,-10]],"physical_route":[[-1,1],[2,1],[2,-10]],"length":14,"zone":"Z5A","tie":false,"impedance":{"r_ohm":1.059,"x_ohm":0.9337,"z_magnitude_ohm":1.411835,"mapped_length_pixels":14}},{"name":"L_28_29","from":"B28","to":"B29","route":[[2,-10],[2,-18],[4,-18]],"physical_route":[[2,-10],[2,-18],[4,-18]],"length":10,"zone":"Z5A","tie":false,"impedance":{"r_ohm":0.8042,"x_ohm":0.7006,"z_magnitude_ohm":1.066573,"mapped_length_pixels":10}},{"name":"L_29_30","from":"B29","to":"B30","route":[[4,-18],[10,-18]],"physical_route":[[4,-18],[10,-18]],"length":6,"zone":"Z5A","tie":false,"impedance":{"r_ohm":0.5075,"x_ohm":0.2585,"z_magnitude_ohm":0.569542,"mapped_length_pixels":6}},{"name":"L_30_31","from":"B30","to":"B31","route":[[10,-18],[23,-18]],"physical_route":[[10,-18],[23,-18]],"length":13,"zone":"Z5B","tie":false,"impedance":{"r_ohm":0.9744,"x_ohm":0.963,"z_magnitude_ohm":1.369972,"mapped_length_pixels":13}},{"name":"L_31_32","from":"B31","to":"B32","route":[[23,-18],[28,-18]],"physical_route":[[23,-18],[28,-18]],"length":5,"zone":"Z5B","tie":false,"impedance":{"r_ohm":0.3105,"x_ohm":0.3619,"z_magnitude_ohm":0.476846,"mapped_length_pixels":5}},{"name":"L_32_33","from":"B32","to":"B33","route":[[28,-18],[35,-18]],"physical_route":[[28,-18],[35,-18]],"length":7,"zone":"Z5B","tie":false,"impedance":{"r_ohm":0.341,"x_ohm":0.5302,"z_magnitude_ohm":0.630391,"mapped_length_pixels":7}},{"name":"TIE_8_21","from":"B8","to":"B21","route":[[14,8],[14,18],[-17,18],[-17,26]],"physical_route":[[14,8],[14,18],[-17,18],[-17,26]],"length":49,"zone":"Z3","tie":true,"impedance":null},{"name":"TIE_9_15","from":"B9","to":"B15","route":[[26,8],[28,8],[28,11],[44,11]],"physical_route":[[26,8],[28,8],[28,11],[44,11]],"length":21,"zone":"Z2B","tie":true,"impedance":null},{"name":"TIE_12_22","from":"B12","to":"B22","route":[[26,28],[26,31],[-6,31],[-6,26]],"physical_route":[[26,28],[26,32],[-6,32],[-6,26]],"length":42,"zone":"Z3","tie":true,"impedance":null},{"name":"TIE_18_33","from":"B18","to":"B33","route":[[53,-18],[55,-18],[55,-20],[35,-20],[35,-18]],"physical_route":[[53,-18],[55,-18],[55,-20],[35,-20],[35,-18]],"length":26,"zone":"Z5B","tie":true,"impedance":null},{"name":"TIE_25_29","from":"B25","to":"B29","route":[[-20,-18],[-20,-20],[4,-20],[4,-18]],"physical_route":[[-20,-18],[-20,-20],[4,-20],[4,-18]],"length":28,"zone":"Z5A","tie":true,"impedance":null}],"roads":[{"name":"HW_MAIN","level":2,"route":[[-34,7],[57,7]]},{"name":"HW_NORTH_EASTBOUND","level":2,"route":[[-34,26],[57,26]]},{"name":"HW_SOUTH_EASTBOUND","level":2,"route":[[-34,-18],[57,-18]]},{"name":"R_CONNECT_W","level":1,"route":[[-28,-18],[-28,30]]},{"name":"R_VERTICAL_CENTRAL","level":1,"route":[[-1,-22],[-1,34]]},{"name":"R_VERTICAL_EAST","level":1,"route":[[26,-22],[26,34]]},{"name":"R_Z4_ACCESS","level":1,"route":[[-20,-18],[-20,7]]},{"name":"R_TIE_25_29_SERVICE","level":1,"route":[[-20,-18],[-20,-20],[4,-20],[4,-18]]}],"switches":[{"name":"S_SOURCE","line":"L_1_2","node":"B1","state":"closed","operation_type":"remote","operation_time_min":0.0},{"name":"RCS_6_7","line":"L_6_7","node":"B6","state":"closed","operation_type":"remote","operation_time_min":0.0},{"name":"RCS_2_19","line":"L_2_19","node":"B2","state":"closed","operation_type":"remote","operation_time_min":0.0},{"name":"MS_3_23","line":"L_3_23","node":"B3","state":"closed","operation_type":"manual","operation_time_min":5.0},{"name":"MS_6_26","line":"L_6_26","node":"B6","state":"closed","operation_type":"manual","operation_time_min":5.0},{"name":"RCS_10_11","line":"L_10_11","node":"B10","state":"closed","operation_type":"remote","operation_time_min":0.0},{"name":"MS_24_25","line":"L_24_25","node":"B24","state":"closed","operation_type":"manual","operation_time_min":5.0},{"name":"RCS_30_31","line":"L_30_31","node":"B30","state":"closed","operation_type":"remote","operation_time_min":0.0},{"name":"SW_TIE_8_21","line":"TIE_8_21","node":"B8","state":"opened","operation_type":"remote","operation_time_min":0.0},{"name":"SW_TIE_9_15","line":"TIE_9_15","node":"B9","state":"opened","operation_type":"remote","operation_time_min":0.0},{"name":"SW_TIE_12_22","line":"TIE_12_22","node":"B12","state":"opened","operation_type":"remote","operation_time_min":0.0},{"name":"SW_TIE_18_33","line":"TIE_18_33","node":"B18","state":"opened","operation_type":"remote","operation_time_min":0.0},{"name":"SW_TIE_25_29","line":"TIE_25_29","node":"B25","state":"opened","operation_type":"manual","operation_time_min":5.0}],"faults":[{"name":"F13_14","position":[44,23],"repair_resource":12,"line":"L_13_14","zone":"Z2B"},{"name":"F24_25","position":[-20,-13],"repair_resource":10,"line":"L_24_25","zone":"Z4B"},{"name":"F30_31","position":[17,-18],"repair_resource":14,"line":"L_30_31","zone":"Z5B"}],"units":[{"name":"RC1","type":"RC","position":[-30,7],"move_speed":8,"repair_speed":5},{"name":"RC2","type":"RC","position":[11,16],"move_speed":8,"repair_speed":5},{"name":"PAC1","source_name":"Scott1","type":"PAC","position":[-28,11],"move_speed":10,"inspection_range":4},{"name":"MPS1","type":"MPS","position":[-30,8],"move_speed":4,"p_limit":500,"energy_kwh":750.0}],"zones":[{"name":"Z1","buses":["B1","B2","B3","B4","B5","B6"],"p_kw":430,"q_kvar":230},{"name":"Z2A","buses":["B7","B8","B9","B10"],"p_kw":520,"q_kvar":240},{"name":"Z2B","buses":["B11","B12","B13","B14","B15","B16","B17","B18"],"p_kw":555,"q_kvar":270},{"name":"Z3","buses":["B19","B20","B21","B22"],"p_kw":360,"q_kvar":160},{"name":"Z4A","buses":["B23","B24"],"p_kw":510,"q_kvar":250},{"name":"Z4B","buses":["B25"],"p_kw":420,"q_kvar":200},{"name":"Z5A","buses":["B26","B27","B28","B29","B30"],"p_kw":500,"q_kvar":740},{"name":"Z5B","buses":["B31","B32","B33"],"p_kw":420,"q_kvar":210}],"unknown_regions":[{"name":"Unknown_Z2","lower_left":[5,-19],"upper_right":[54,29]},{"name":"Unknown_Z4","lower_left":[-23,-19],"upper_right":[-19,3]},{"name":"Unknown_Z5","lower_left":[-2,-19],"upper_right":[36,6]}],"source":{"name":"IEEE33 Substation","node":"B1","restoration_time_step":0}}</script>
+  <script>(() => {
+  "use strict";
+  const raw = document.getElementById("sim-data").textContent;
+  if (raw.trim().startsWith("_")) {
+    document.body.innerHTML = "<main style='max-width:700px;margin:70px auto;font:16px system-ui'><h1>Development template</h1><p>Open IEEE33_Standalone_Simulator_Demo.html instead.</p></main>";
+    return;
+  }
+  const data = JSON.parse(raw);
+  const nodeById = Object.fromEntries(data.nodes.map(node => [node.name, node]));
+  const lineById = Object.fromEntries(data.lines.map(line => [line.name, line]));
+  const switchById = Object.fromEntries(data.switches.map(item => [item.name, item]));
+  const faultById = Object.fromEntries(data.faults.map(fault => [fault.name, fault]));
+  const unitById = Object.fromEntries(data.units.map(unit => [unit.name, unit]));
+  const zoneById = Object.fromEntries(data.zones.map(zone => [zone.name, zone]));
+  const zoneColors = {Z1:"#477d66", Z2A:"#487fb0", Z2B:"#729e52", Z3:"#bb7442", Z4A:"#8563a5", Z4B:"#bd5d69", Z5A:"#238487", Z5B:"#a08548"};
+  const unitColors = {RC1:"#2d78ad", RC2:"#186983", PAC1:"#8056a5", MPS1:"#327f5c"};
+  const totalP = data.nodes.reduce((sum, node) => sum + (node.load?.[0] || 0), 0);
+  const allPoints = [
+    ...data.nodes.map(node => node.position),
+    ...data.roads.flatMap(road => road.route),
+    ...data.lines.flatMap(line => line.route)
+  ];
+  const bounds = {
+    minX: Math.min(...allPoints.map(point => point[0])) - 3,
+    maxX: Math.max(...allPoints.map(point => point[0])) + 3,
+    minY: Math.min(...allPoints.map(point => point[1])) - 4,
+    maxY: Math.max(...allPoints.map(point => point[1])) + 4
+  };
+  const NS = "http://www.w3.org/2000/svg";
+  const el = id => document.getElementById(id);
+  const html = value => String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+  const fmt = (value, digits = 1) => Number(value || 0).toLocaleString("en-US", {maximumFractionDigits:digits});
+  const closeEnough = (a,b) => Math.abs(a-b) < 1e-7;
+  const same = (a,b) => closeEnough(a[0],b[0]) && closeEnough(a[1],b[1]);
+  const distance = (a,b) => Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]);
+  const unknownZones = () => new Set(data.zones.filter(zone => zone.buses.some(bus => {
+    const [x,y] = nodeById[bus].position;
+    return data.unknown_regions.some(region => x >= region.lower_left[0] && x <= region.upper_right[0] && y >= region.lower_left[1] && y <= region.upper_right[1]);
+  })).map(zone => zone.name));
+  let state;
+
+  function initialState(scenario = false) {
+    return {
+      scenario, step:0, time:0, sequence:0, layer:"combined",
+      switches:Object.fromEntries(data.switches.map(item => [item.name,item.state])),
+      faults:Object.fromEntries(data.faults.map(item => [item.name,{active:scenario,known:false,analyzed:false,remaining:item.repair_resource}])),
+      unknown:scenario ? unknownZones() : new Set(),
+      units:Object.fromEntries(data.units.map(item => [item.name,{position:[...item.position],job:null,resources:item.type==="RC" ? 50 : null,energy:item.type==="MPS" ? item.energy_kwh : null}])),
+      mpsBus:null, pendingSwitch:{},
+      pendingUnit:Object.fromEntries(data.units.map(item => [item.name,{type:"continue",target:""}])),
+      selected:null, events:[]
+    };
+  }
+  function record(message) {
+    state.sequence += 1;
+    state.events.push({sequence:state.sequence,time:state.time,message});
+    if (state.events.length > 100) state.events.shift();
+  }
+  function message(value,error=false) {
+    el("message").textContent=value;
+    el("message").classList.toggle("error",error);
+  }
+  function blockedLines(switches=state.switches,faults=state.faults) {
+    const blocked=new Set();
+    for (const item of data.switches) if (switches[item.name] === "opened") blocked.add(item.line);
+    for (const item of data.faults) if (faults[item.name].active && item.line) blocked.add(item.line);
+    return blocked;
+  }
+  function topology(switches=state.switches,faults=state.faults) {
+    const blocked=blockedLines(switches,faults);
+    const adjacency=Object.fromEntries(data.nodes.map(node => [node.name,[]]));
+    const parent=Object.fromEntries(data.nodes.map(node => [node.name,node.name]));
+    const find=node => parent[node]===node ? node : (parent[node]=find(parent[node]));
+    let radial=true;
+    for (const line of data.lines) {
+      if (blocked.has(line.name)) continue;
+      adjacency[line.from].push(line.to);
+      adjacency[line.to].push(line.from);
+      const a=find(line.from),b=find(line.to);
+      if (a===b) radial=false;
+      else parent[a]=b;
+    }
+    const powered=new Set([data.source.node]),queue=[data.source.node];
+    while(queue.length) for (const next of adjacency[queue.shift()]) if(!powered.has(next)) {powered.add(next);queue.push(next);}
+    const suppliedZones=new Set(data.zones.filter(zone => zone.buses.every(bus => powered.has(bus))).map(zone => zone.name));
+    let p=0,q=0,weighted=0,mps=0;
+    for (const node of data.nodes) {
+      if (!node.load) continue;
+      if (powered.has(node.name)) {p+=node.load[0];q+=node.load[1];weighted+=node.load[0]*node.load[2];}
+      else if (node.name===state.mpsBus) mps=Math.min(node.load[0],unitById.MPS1.p_limit);
+    }
+    return {blocked, powered, radial, suppliedZones, p, q, weighted, mps};
+  }
+  function pendingTopology() {
+    return {...state.switches,...state.pendingSwitch};
+  }
+  function validateSwitches(show=true) {
+    const proposed=pendingTopology();
+    const next=topology(proposed);
+    const current=topology();
+    let reason="";
+    if(!next.radial) reason="Switch plan rejected: it creates an electrical loop.";
+    else if (next.weighted < current.weighted-1e-7) reason="Switch plan rejected: energized load would decrease.";
+    if(show) {
+      el("switch-validation").textContent=reason || `Valid radial plan · ${fmt(next.p,0)} kW grid load`;
+      message(reason || "Switch plan validated.",Boolean(reason));
+    }
+    return !reason;
+  }
+  function vectorStep(position,target,capacity) {
+    const next=[...position];
+    let left=capacity;
+    for (let axis=0;axis<2;axis++) {
+      const delta=target[axis]-next[axis];
+      const used=Math.min(Math.abs(delta),left);
+      next[axis]+=Math.sign(delta)*used;
+      left-=used;
+    }
+    return {position:next,remaining:left};
+  }
+  function unitTarget(job) {
+    if (job.type==="move" || job.type==="connect") return nodeById[job.target]?.position;
+    if (job.type==="operate") return nodeById[switchById[job.target]?.node]?.position;
+    if (job.type==="analyze" || job.type==="repair") return faultById[job.target]?.position;
+    if (job.type==="patrol") {
+      const buses=zoneById[job.target]?.buses || [];
+      return buses.map(bus => nodeById[bus].position).sort((a,b) => distance(a,job.start)-distance(b,job.start))[0];
+    }
+    return null;
+  }
+  function beginJob(name, command) {
+    const unit=state.units[name];
+    if (unit.job) return;
+    if (command.type==="continue" || command.type==="stay") return;
+    unit.job={type:command.type,target:command.target,start:[...unit.position],progress:0,phase:"travel"};
+  }
+  function validateUnitCommands() {
+    const chosenManual=new Set();
+    for (const [name,command] of Object.entries(state.pendingUnit)) {
+      if(!command || ["continue","stay"].includes(command.type)) continue;
+      const unit=unitById[name];
+      if(state.units[name].job) return `${name} is busy; Continue its current task.`;
+      if(!command.target && command.type!=="disconnect") return `Choose a target for ${name}.`;
+      if(["move","connect"].includes(command.type) && !nodeById[command.target]) return `Invalid bus for ${name}.`;
+      if(command.type==="patrol" && !zoneById[command.target]) return `Invalid zone for ${name}.`;
+      if(["analyze","repair"].includes(command.type)) {
+        const fault=state.faults[command.target];
+        if(!fault?.active || !fault.known) return `${name}: select a discovered, active fault.`;
+        if(command.type==="repair" && !fault.analyzed) return `${name}: analyze the fault before repair.`;
+        if(command.type==="repair" && state.units[name].resources<=0) return `${name}: no repair resources remain.`;
+      }
+      if(command.type==="operate") {
+        const item=switchById[command.target];
+        if(!item || item.operation_type!=="manual") return `${name}: select a manual switch.`;
+        if(chosenManual.has(item.name)) return `${item.name} has two assigned crews.`;
+        chosenManual.add(item.name);
+      }
+      if(command.type==="connect") {
+        const node=nodeById[command.target];
+        if(!node.load || node.load[0]>unit.p_limit) return `MPS1 can only connect to a load bus within ${unit.p_limit} kW.`;
+        if(state.mpsBus) return "Disconnect MPS1 before relocating it.";
+      }
+    }
+    return "";
+  }
+  function discover(zoneName) {
+    state.unknown.delete(zoneName);
+    for(const spec of data.faults) if(spec.zone===zoneName && state.faults[spec.name].active && !state.faults[spec.name].known) {
+      state.faults[spec.name].known=true;
+      record(`Fault ${spec.name} discovered in ${zoneName}.`);
+    }
+  }
+  function progressUnit(name) {
+    const unit=state.units[name],spec=unitById[name],job=unit.job;
+    if(!job) return;
+    let remaining=spec.move_speed;
+    const target=unitTarget(job);
+    if(job.phase==="travel" && target) {
+      const startedHere=same(unit.position,target);
+      const move=vectorStep(unit.position,target,remaining);
+      remaining=move.remaining;
+      unit.position=move.position;
+      if(!same(unit.position,target)) return;
+      job.phase="work";
+      record(`${name} arrived at ${job.target}.`);
+      if(!startedHere && job.type!=="patrol" && job.type!=="move") return;
+    }
+    if(job.phase!=="work") return;
+    if(job.type==="move") {unit.job=null;return;}
+    if(job.type==="patrol") {
+      const route=data.lines.filter(line => !line.tie && line.zone===job.target).reduce((sum,line) => sum+line.length,0);
+      job.progress+=remaining;
+      if(job.progress>=Math.max(1,route)) {
+        const buses=zoneById[job.target].buses;
+        unit.position=[...nodeById[buses[buses.length-1]].position];
+        discover(job.target);
+        record(`${name} completed patrol of ${job.target}.`);
+        unit.job=null;
+      }
+      return;
+    }
+    if(job.type==="analyze") {
+      state.faults[job.target].analyzed=true;
+      record(`${name} analyzed Fault ${job.target}.`);
+      unit.job=null;
+      return;
+    }
+    if(job.type==="repair") {
+      const fault=state.faults[job.target];
+      const amount=Math.min(spec.repair_speed,fault.remaining,unit.resources);
+      fault.remaining-=amount;
+      unit.resources-=amount;
+      if(fault.remaining<=0) {
+        fault.active=false;
+        record(`${name} repaired Fault ${job.target}.`);
+        unit.job=null;
+      } else record(`${name} repaired ${amount} resource of Fault ${job.target}; ${fault.remaining} remain.`);
+      return;
+    }
+    if(job.type==="operate") {
+      const next=state.switches[job.target]==="closed"?"opened":"closed";
+      const candidate={...state.switches,[job.target]:next};
+      const before=topology();
+      const after=topology(candidate);
+      if(!after.radial || after.weighted<before.weighted-1e-7) record(`${job.target} operation rejected by topology validation.`);
+      else {state.switches[job.target]=next;record(`${name} operated ${job.target} to ${next}.`);}
+      unit.job=null;
+      return;
+    }
+    if(job.type==="connect") {
+      state.mpsBus=job.target;
+      record(`MPS1 connected at ${job.target}.`);
+      unit.job=null;
+    }
+  }
+  function executeStep() {
+    if(!state.scenario) {message("Reset Fault Scenario before executing steps.",true);return;}
+    if(!validateSwitches(false)) {validateSwitches(true);return;}
+    const error=validateUnitCommands();
+    if(error) {message(error,true);return;}
+    state.time=(state.step+1)*5;
+    for (const [name,next] of Object.entries(state.pendingSwitch)) if(state.switches[name]!==next) {
+      state.switches[name]=next;
+      record(`${name} remotely ${next}.`);
+    }
+    const requested=structuredClone(state.pendingUnit);
+    state.pendingSwitch={};
+    for (const [name,command] of Object.entries(requested)) {
+      if(command.type==="disconnect" && name==="MPS1") {
+        state.mpsBus=null;
+        record("MPS1 disconnected.");
+      } else beginJob(name,command);
+    }
+    for (const name of Object.keys(state.units)) progressUnit(name);
+    if(state.mpsBus && !topology().powered.has(state.mpsBus)) {
+      const battery=state.units.MPS1;
+      const used=topology().mps*5/60;
+      battery.energy=Math.max(0,battery.energy-used);
+      if(battery.energy===0) {state.mpsBus=null;record("MPS1 energy depleted.");}
+    }
+    state.step+=1;
+    state.pendingUnit=Object.fromEntries(data.units.map(item => [item.name,{type:"continue",target:""}]));
+    message(`Step ${state.step} executed. Select commands for the next step.`);
+    render();
+  }
+  function project(point) {
+    const width=1100,height=700,pad=44;
+    const spanX=bounds.maxX-bounds.minX,spanY=bounds.maxY-bounds.minY;
+    const scale=Math.min((width-2*pad)/spanX,(height-2*pad)/spanY);
+    const ox=(width-spanX*scale)/2,oy=(height-spanY*scale)/2;
+    return [ox+(point[0]-bounds.minX)*scale,oy+(bounds.maxY-point[1])*scale];
+  }
+  function unproject(point) {
+    const width=1100,height=700,pad=44;
+    const spanX=bounds.maxX-bounds.minX,spanY=bounds.maxY-bounds.minY;
+    const scale=Math.min((width-2*pad)/spanX,(height-2*pad)/spanY);
+    const ox=(width-spanX*scale)/2,oy=(height-spanY*scale)/2;
+    return [Math.round((point[0]-ox)/scale+bounds.minX),Math.round(bounds.maxY-(point[1]-oy)/scale)];
+  }
+  function svg(tag,attrs={},text=null) {
+    const item=document.createElementNS(NS,tag);
+    for(const [key,value] of Object.entries(attrs)) item.setAttribute(key,value);
+    if(text!==null) item.textContent=text;
+    return item;
+  }
+  const route=points => points.map(point => project(point).join(",")).join(" ");
+  function select(type,id) {state.selected={type,id};renderInspector();}
+  function drawMap(status) {
+    const map=el("map");
+    map.replaceChildren();
+    for(let x=Math.ceil(bounds.minX/2)*2;x<=bounds.maxX;x+=2) {
+      const [px]=project([x,0]);
+      map.appendChild(svg("line",{x1:px,y1:16,x2:px,y2:676,stroke:x%10===0?"#e8edf1":"#f2f5f7","stroke-width":1}));
+      if(x%10===0) map.appendChild(svg("text",{x:px,y:692,fill:"#667486","font-size":10,"text-anchor":"middle"},String(x)));
+    }
+    for(let y=Math.ceil(bounds.minY/2)*2;y<=bounds.maxY;y+=2) {
+      const [,py]=project([0,y]);
+      map.appendChild(svg("line",{x1:25,y1:py,x2:1085,y2:py,stroke:y%10===0?"#e8edf1":"#f2f5f7","stroke-width":1}));
+      if(y%10===0) map.appendChild(svg("text",{x:20,y:py+3,fill:"#667486","font-size":10,"text-anchor":"end"},String(y)));
+    }
+    if(state.layer!=="grid") for(const road of data.roads) {
+      const fast=road.level>=2;
+      map.appendChild(svg("polyline",{points:route(road.route),fill:"none",stroke:fast?"#cbb889":"#e3d8bb","stroke-width":fast?10:4.5,opacity:.85,"stroke-linecap":"round","stroke-linejoin":"round"}));
+    }
+    if(state.layer!=="roads") {
+      if(state.layer==="combined") for(const line of data.lines) if(!line.tie) map.appendChild(svg("polyline",{points:route(line.route),fill:"none",stroke:"#e3d8bb","stroke-width":4.5,opacity:.72}));
+      if(state.scenario) for(const region of data.unknown_regions) {
+        const a=project([region.lower_left[0],region.upper_right[1]]),b=project([region.upper_right[0],region.lower_left[1]]);
+        map.appendChild(svg("rect",{x:a[0],y:a[1],width:b[0]-a[0],height:b[1]-a[1],fill:"#75a9ae",opacity:.045,stroke:"#72b5b6","stroke-width":1.4,"stroke-dasharray":"7 5"}));
+      }
+      for(const line of data.lines) {
+        const fault=data.faults.find(item => item.line===line.name && state.faults[item.name].active);
+        const visibleFault=fault && state.faults[fault.name].known;
+        const closed=!status.blocked.has(line.name);
+        const color=visibleFault?"#b9443f":closed?"#328b4b":"#b9443f";
+        const shape=svg("polyline",{points:route(line.route),fill:"none",stroke:color,"stroke-width":closed?3:3.4,"stroke-dasharray":closed?(line.tie?"7 4":""):"8 5","stroke-linecap":"round","stroke-linejoin":"round","data-line":line.name});
+        shape.addEventListener("click",event=>{event.stopPropagation();select("line",line.name);});
+        shape.style.cursor="pointer";
+        map.appendChild(shape);
+        if(!line.tie) {
+          const a=project(line.route[0]),b=project(line.route[line.route.length-1]);
+          const x=(a[0]+b[0])/2,y=(a[1]+b[1])/2;
+          map.appendChild(svg("text",{x:x+2,y:y-3,fill:"#3482c0","font-size":8,"font-style":"italic","paint-order":"stroke",stroke:"#fff","stroke-width":2},line.name));
+        }
+      }
+      for(const node of data.nodes) {
+        const [x,y]=project(node.position);
+        const fill=node.name===data.source.node?"#684994":status.powered.has(node.name)?"#328b4b":node.name===state.mpsBus?"#238d98":"#d29b3b";
+        const circle=svg("circle",{cx:x,cy:y,r:5.5,fill,stroke:"#173025","stroke-width":1.4,"data-bus":node.name});
+        circle.style.cursor="pointer";
+        circle.addEventListener("click",event=>{event.stopPropagation();select("bus",node.name);});
+        map.appendChild(circle);
+        map.appendChild(svg("text",{x:x+6,y:y-8,fill:"#c97223","font-size":10,"font-weight":700,"paint-order":"stroke",stroke:"#fff","stroke-width":3},node.name));
+      }
+      for(const item of data.switches) {
+        const [x,y]=project(nodeById[item.node].position);
+        const isClosed=state.switches[item.name]==="closed";
+        const rect=svg("rect",{x:x-3,y:y+7,width:8,height:8,fill:isClosed?"#258448":"#c7433d",stroke:"#1a2920","stroke-width":1,"data-switch":item.name});
+        rect.style.cursor="pointer";
+        rect.addEventListener("click",event=>{event.stopPropagation();select("switch",item.name);});
+        map.appendChild(rect);
+      }
+      for(const spec of data.faults) if(state.faults[spec.name].known && state.faults[spec.name].active) {
+        const [x,y]=project(spec.position);
+        const mark=svg("path",{d:`M${x-6},${y-6}L${x+6},${y+6}M${x+6},${y-6}L${x-6},${y+6}`,stroke:"#bd4941","stroke-width":3,"data-fault":spec.name});
+        mark.style.cursor="pointer";
+        mark.addEventListener("click",event=>{event.stopPropagation();select("fault",spec.name);});
+        map.appendChild(mark);
+      }
+    }
+    for(const spec of data.units) {
+      const unit=state.units[spec.name],[x,y]=project(unit.position);
+      map.appendChild(svg("circle",{cx:x,cy:y,r:6.5,fill:unitColors[spec.name],stroke:"#fff","stroke-width":2,"data-unit":spec.name}));
+      map.appendChild(svg("text",{x:x+8,y:y+4,fill:unitColors[spec.name],"font-size":11,"font-weight":800,"paint-order":"stroke",stroke:"#fff","stroke-width":3},spec.name));
+    }
+  }
+  function renderInspector() {
+    const chosen=state.selected;
+    let text="";
+    if(chosen?.type==="bus") {
+      const node=nodeById[chosen.id];
+      text=`${node.name} · ${node.zone || "source"} · ${node.load ? node.load[0]+" kW" : "no load"}`;
+    } else if(chosen?.type==="line") {
+      const line=lineById[chosen.id];
+      text=`${line.name}: ${line.from} → ${line.to} · ${line.length} Pixel`;
+    } else if(chosen?.type==="switch") {
+      const item=switchById[chosen.id];
+      text=`${item.name} · ${item.operation_type} · ${state.switches[item.name]}`;
+    } else if(chosen?.type==="fault") text=`Fault ${chosen.id} · ${faultById[chosen.id].line}`;
+    el("pixel-readout").textContent=text || "Move the mouse over the map.";
+  }
+  function renderStatus(status) {
+    const discovered=Object.values(state.faults).filter(fault=>fault.known).length;
+    const values={
+      "step-value":state.step,"event-value":state.sequence,"fault-value":discovered,
+      "power-value":fmt(status.p+status.mps,0),
+      "weighted-value":fmt(status.weighted+(state.mpsBus ? status.mps*(nodeById[state.mpsBus].load?.[2] || 1) : 0),0),
+      "grid-value":"Available","pq-value":`${fmt(status.p,0)}/${fmt(status.q,0)}`
+    };
+    for(const [id,value] of Object.entries(values)) el(id).textContent=value;
+    el("unit-states").innerHTML=data.units.map(spec=>{
+      const unit=state.units[spec.name];
+      const stateLabel=unit.job ? unit.job.type.replace(/^./,letter=>letter.toUpperCase()) : "Idle";
+      return `<div class="unit-status"><strong><span class="glyph">▶</span>${spec.name} · ${spec.type}</strong><small>${stateLabel}</small></div>`;
+    }).join("");
+    el("source-status").textContent="Available";
+    el("mps-status").textContent=state.mpsBus ? `Supplying ${state.mpsBus}` : (state.units.MPS1.job?.type || "Idle");
+    el("mps-position").textContent=`(${state.units.MPS1.position.map(value=>fmt(value,1)).join(", ")})`;
+    el("mps-energy").textContent=`${fmt(state.units.MPS1.energy,1)} kWh`;
+    el("zone-status").innerHTML=data.zones.map(zone=>{
+      const supply=status.suppliedZones.has(zone.name)?"Grid":"Out";
+      return `<tr><td style="color:${zoneColors[zone.name]};font-weight:700">${zone.name}</td><td>${fmt(zone.p_kw,0)}</td><td>${state.unknown.has(zone.name)?"No":"Yes"}</td><td>${supply}</td></tr>`;
+    }).join("");
+    el("events").innerHTML=[...state.events].reverse().slice(0,20).map(event=>`<li><time>${fmt(event.time,1)} min · E${event.sequence}</time><br>${html(event.message)}</li>`).join("");
+  }
+  function renderSwitches() {
+    el("switch-commands").innerHTML=data.switches.map(item=>{
+      const next=state.switches[item.name]==="closed"?"opened":"closed";
+      const pending=state.pendingSwitch[item.name];
+      const disabled=item.operation_type==="manual";
+      return `<div class="switch-card ${pending?"pending":""}"><strong>${item.name}</strong><span class="chip ${state.switches[item.name]}">${state.switches[item.name]}</span><button type="button" data-switch="${item.name}" ${disabled?"disabled title='Assign an RC below'":""}>${disabled?"RC required":pending?"Cancel":next==="closed"?"Close":"Open"}</button></div>`;
+    }).join("");
+  }
+  function modesFor(spec) {
+    if(spec.type==="RC") return ["continue","move","stay","patrol","analyze","repair","operate"];
+    if(spec.type==="PAC") return ["continue","move","stay","patrol"];
+    return ["continue","move","stay","connect","disconnect"];
+  }
+  function targetsFor(type) {
+    if(type==="move") return data.nodes.map(node=>[node.name,node.name]);
+    if(type==="patrol") return data.zones.filter(zone=>state.unknown.has(zone.name)).map(zone=>[zone.name,zone.name]);
+    if(type==="analyze") return data.faults.filter(spec=>state.faults[spec.name].active && state.faults[spec.name].known && !state.faults[spec.name].analyzed).map(spec=>[spec.name,`Fault ${spec.name}`]);
+    if(type==="repair") return data.faults.filter(spec=>state.faults[spec.name].active && state.faults[spec.name].known && state.faults[spec.name].analyzed).map(spec=>[spec.name,`Fault ${spec.name}`]);
+    if(type==="operate") return data.switches.filter(item=>item.operation_type==="manual").map(item=>[item.name,item.name]);
+    if(type==="connect") return data.nodes.filter(node=>node.load && node.load[0]<=unitById.MPS1.p_limit).map(node=>[node.name,`${node.name} · ${node.load[0]} kW`]);
+    return [];
+  }
+  function renderUnits() {
+    el("mobile-commands").innerHTML=data.units.map(spec=>{
+      const unit=state.units[spec.name],command=state.pendingUnit[spec.name];
+      const busy=Boolean(unit.job);
+      const stateLabel=busy ? `${unit.job.type} → ${unit.job.target}` : "Idle";
+      const resource=spec.type==="RC" ? ` · Resources ${unit.resources}/50` : spec.type==="MPS" ? ` · Energy ${fmt(unit.energy,1)} kWh` : "";
+      const choices=targetsFor(command.type);
+      const showTarget=choices.length || ["move","patrol","analyze","repair","operate","connect"].includes(command.type);
+      const details=showTarget ? `<div class="target-row"><select data-target="${spec.name}" aria-label="${spec.name} target"><option value="">Select target</option>${choices.map(([value,label])=>`<option value="${value}" ${command.target===value?"selected":""}>${html(label)}</option>`).join("")}</select></div>` : "";
+      return `<div class="crew-card"><div class="crew-head"><strong>${spec.name} · ${spec.type}</strong><span>${html(stateLabel)}</span></div><div class="crew-meta">Position [${unit.position.map(value=>fmt(value,1)).join(", ")}] · Speed ${spec.move_speed} Pixel/step${resource}</div><div class="mode-row">${modesFor(spec).map(mode=>`<button type="button" data-mode="${mode}" data-unit="${spec.name}" aria-pressed="${command.type===mode}" ${busy && mode!=="continue"?"disabled":""}>${mode[0].toUpperCase()+mode.slice(1)}</button>`).join("")}</div>${details}<div class="pending-label">Pending: ${busy? `Continue ${unit.job.type} ${unit.job.target}` : `${command.type}${command.target?" → "+command.target:""}`}</div></div>`;
+    }).join("");
+  }
+  function render() {
+    const status=topology();
+    renderStatus(status);
+    drawMap(status);
+    renderInspector();
+    renderSwitches();
+    renderUnits();
+    for(const button of el("layers").querySelectorAll("button")) button.setAttribute("aria-pressed",String(button.dataset.layer===state.layer));
+    el("execute-step").disabled=!state.scenario;
+    el("execute-step-side").disabled=!state.scenario;
+  }
+  function downloadCommands() {
+    const payload={switch_commands:state.pendingSwitch,mobile_commands:state.pendingUnit};
+    const file=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(file),link=document.createElement("a");
+    link.href=url;
+    link.download=`dsr_ieee33_commands_T${String(state.step).padStart(3,"0")}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+  function showTextInterface() {
+    const payload={time_step:state.step,time_min:state.time,discovered_faults:data.faults.filter(item=>state.faults[item.name].known).map(item=>item.name),switches:state.switches,units:Object.fromEntries(Object.entries(state.units).map(([name,unit])=>[name,{position:unit.position,job:unit.job}])),pending:{switch_commands:state.pendingSwitch,mobile_commands:state.pendingUnit}};
+    const dialog=document.createElement("dialog");
+    dialog.style.cssText="width:min(700px,94vw);border:1px solid #cad2d8;border-radius:6px;padding:16px";
+    dialog.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><strong>Text Interface</strong><button type="button">Close</button></div><pre style="max-height:70vh;overflow:auto;font-size:11px">${html(JSON.stringify(payload,null,2))}</pre>`;
+    document.body.appendChild(dialog);
+    dialog.querySelector("button").onclick=()=>{dialog.close();dialog.remove();};
+    dialog.showModal();
+  }
+  el("map").addEventListener("mousemove",event=>{
+    const rect=el("map").getBoundingClientRect();
+    const point=unproject([(event.clientX-rect.left)*1100/rect.width,(event.clientY-rect.top)*700/rect.height]);
+    el("pixel-readout").textContent=`Pixel: (${point.join(", ")}) · ${state.selected ? state.selected.id : "Select a map asset for details"}`;
+  });
+  el("map").addEventListener("mouseleave",renderInspector);
+  el("layers").addEventListener("click",event=>{const button=event.target.closest("button[data-layer]");if(!button)return;state.layer=button.dataset.layer;render();});
+  el("switch-commands").addEventListener("click",event=>{
+    const button=event.target.closest("button[data-switch]");
+    if(!button)return;
+    const name=button.dataset.switch,next=state.switches[name]==="closed"?"opened":"closed";
+    if(state.pendingSwitch[name]===next) delete state.pendingSwitch[name];
+    else state.pendingSwitch[name]=next;
+    el("switch-validation").textContent="Switch plan changed. Validate before executing.";
+    renderSwitches();
+  });
+  el("mobile-commands").addEventListener("click",event=>{
+    const button=event.target.closest("button[data-mode]");
+    if(!button)return;
+    const name=button.dataset.unit,type=button.dataset.mode;
+    state.pendingUnit[name]={type,target:""};
+    renderUnits();
+  });
+  el("mobile-commands").addEventListener("change",event=>{
+    const select=event.target.closest("select[data-target]");
+    if(select) {state.pendingUnit[select.dataset.target].target=select.value;renderUnits();}
+  });
+  el("validate-switches").onclick=()=>validateSwitches(true);
+  el("execute-step").onclick=executeStep;
+  el("execute-step-side").onclick=executeStep;
+  el("download-commands").onclick=downloadCommands;
+  el("text-interface").onclick=showTextInterface;
+  el("load-base").onclick=()=>{state=initialState(false);message("Base map loaded. Configure the fault scenario to begin.");render();};
+  el("reset-scenario").onclick=()=>{state=initialState(true);message("Fault scenario loaded. Configure this step's commands.");render();};
+  state=initialState(false);
+  message("Base map loaded. Configure the fault scenario to begin.");
+  render();
+})();
+</script>
+</body>
+</html>

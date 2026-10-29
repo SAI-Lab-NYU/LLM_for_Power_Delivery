@@ -1,5 +1,10 @@
 # DSR Grid Map v23
 
+**IEEE 33-bus case:** This branch also contains a separate 33-bus simulator
+under [`ieee33/`](ieee33/README.md). Run it with `./run_ieee33.sh` (or
+`./run_ieee33.ps1` on Windows); it opens on port 8067. The original Basic13
+case and `./run_v23.sh` below remain unchanged.
+
 V23 is a local FastAPI + Plotly distribution-system-restoration simulator. It
 includes the graphical dashboard and an additional JSON text-command
 interface.

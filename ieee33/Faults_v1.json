@@ -1,0 +1,28 @@
+{
+  "Faults": [
+    {
+      "name": "F13_14",
+      "position": [
+        44,
+        23
+      ],
+      "repair_resource": 12
+    },
+    {
+      "name": "F24_25",
+      "position": [
+        -20,
+        -13
+      ],
+      "repair_resource": 10
+    },
+    {
+      "name": "F30_31",
+      "position": [
+        17,
+        -18
+      ],
+      "repair_resource": 14
+    }
+  ]
+}

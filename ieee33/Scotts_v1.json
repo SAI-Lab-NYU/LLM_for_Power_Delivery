@@ -1,0 +1,10 @@
+{
+  "Scotts": [
+    {
+      "name": "Scott1",
+      "initial_node": "B19",
+      "move_speed": 10,
+      "inspection_range": 4
+    }
+  ]
+}

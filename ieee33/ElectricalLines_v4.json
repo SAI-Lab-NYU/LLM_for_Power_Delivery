@@ -1,0 +1,693 @@
+{
+  "ElectricalLines": [
+    {
+      "name": "L_1_2",
+      "from": "B1",
+      "to": "B2",
+      "position": [
+        [
+          -30,
+          8
+        ],
+        [
+          -28,
+          8
+        ]
+      ],
+      "length_pixels": 2,
+      "label_position": 8
+    },
+    {
+      "name": "L_2_3",
+      "from": "B2",
+      "to": "B3",
+      "position": [
+        [
+          -28,
+          8
+        ],
+        [
+          -22,
+          8
+        ]
+      ],
+      "length_pixels": 6,
+      "label_position": 2
+    },
+    {
+      "name": "L_3_4",
+      "from": "B3",
+      "to": "B4",
+      "position": [
+        [
+          -22,
+          8
+        ],
+        [
+          -17,
+          8
+        ]
+      ],
+      "length_pixels": 5,
+      "label_position": 8
+    },
+    {
+      "name": "L_4_5",
+      "from": "B4",
+      "to": "B5",
+      "position": [
+        [
+          -17,
+          8
+        ],
+        [
+          -12,
+          8
+        ]
+      ],
+      "length_pixels": 5,
+      "label_position": 2
+    },
+    {
+      "name": "L_5_6",
+      "from": "B5",
+      "to": "B6",
+      "position": [
+        [
+          -12,
+          8
+        ],
+        [
+          -1,
+          8
+        ]
+      ],
+      "length_pixels": 11,
+      "label_position": 8
+    },
+    {
+      "name": "L_6_7",
+      "from": "B6",
+      "to": "B7",
+      "position": [
+        [
+          -1,
+          8
+        ],
+        [
+          6,
+          8
+        ]
+      ],
+      "length_pixels": 7,
+      "label_position": 2
+    },
+    {
+      "name": "L_7_8",
+      "from": "B7",
+      "to": "B8",
+      "position": [
+        [
+          6,
+          8
+        ],
+        [
+          14,
+          8
+        ]
+      ],
+      "length_pixels": 8,
+      "label_position": 8
+    },
+    {
+      "name": "L_8_9",
+      "from": "B8",
+      "to": "B9",
+      "position": [
+        [
+          14,
+          8
+        ],
+        [
+          26,
+          8
+        ]
+      ],
+      "length_pixels": 12,
+      "label_position": 2
+    },
+    {
+      "name": "L_9_10",
+      "from": "B9",
+      "to": "B10",
+      "position": [
+        [
+          26,
+          8
+        ],
+        [
+          26,
+          20
+        ]
+      ],
+      "length_pixels": 12,
+      "label_position": 8
+    },
+    {
+      "name": "L_10_11",
+      "from": "B10",
+      "to": "B11",
+      "position": [
+        [
+          26,
+          20
+        ],
+        [
+          26,
+          23
+        ]
+      ],
+      "length_pixels": 3,
+      "label_position": 2
+    },
+    {
+      "name": "L_11_12",
+      "from": "B11",
+      "to": "B12",
+      "position": [
+        [
+          26,
+          23
+        ],
+        [
+          26,
+          28
+        ]
+      ],
+      "length_pixels": 5,
+      "label_position": 8
+    },
+    {
+      "name": "L_12_13",
+      "from": "B12",
+      "to": "B13",
+      "position": [
+        [
+          26,
+          28
+        ],
+        [
+          44,
+          28
+        ]
+      ],
+      "length_pixels": 18,
+      "label_position": 2
+    },
+    {
+      "name": "L_13_14",
+      "from": "B13",
+      "to": "B14",
+      "position": [
+        [
+          44,
+          28
+        ],
+        [
+          44,
+          19
+        ]
+      ],
+      "length_pixels": 9,
+      "label_position": 8
+    },
+    {
+      "name": "L_14_15",
+      "from": "B14",
+      "to": "B15",
+      "position": [
+        [
+          44,
+          19
+        ],
+        [
+          44,
+          11
+        ]
+      ],
+      "length_pixels": 8,
+      "label_position": 2
+    },
+    {
+      "name": "L_15_16",
+      "from": "B15",
+      "to": "B16",
+      "position": [
+        [
+          44,
+          11
+        ],
+        [
+          44,
+          2
+        ]
+      ],
+      "length_pixels": 9,
+      "label_position": 8
+    },
+    {
+      "name": "L_16_17",
+      "from": "B16",
+      "to": "B17",
+      "position": [
+        [
+          44,
+          2
+        ],
+        [
+          44,
+          -18
+        ]
+      ],
+      "length_pixels": 20,
+      "label_position": 2
+    },
+    {
+      "name": "L_17_18",
+      "from": "B17",
+      "to": "B18",
+      "position": [
+        [
+          44,
+          -18
+        ],
+        [
+          53,
+          -18
+        ]
+      ],
+      "length_pixels": 9,
+      "label_position": 8
+    },
+    {
+      "name": "L_2_19",
+      "from": "B2",
+      "to": "B19",
+      "position": [
+        [
+          -28,
+          8
+        ],
+        [
+          -28,
+          11
+        ]
+      ],
+      "length_pixels": 3,
+      "label_position": 2
+    },
+    {
+      "name": "L_19_20",
+      "from": "B19",
+      "to": "B20",
+      "position": [
+        [
+          -28,
+          11
+        ],
+        [
+          -24,
+          11
+        ],
+        [
+          -24,
+          26
+        ]
+      ],
+      "length_pixels": 19,
+      "label_position": 8
+    },
+    {
+      "name": "L_20_21",
+      "from": "B20",
+      "to": "B21",
+      "position": [
+        [
+          -24,
+          26
+        ],
+        [
+          -17,
+          26
+        ]
+      ],
+      "length_pixels": 7,
+      "label_position": 2
+    },
+    {
+      "name": "L_21_22",
+      "from": "B21",
+      "to": "B22",
+      "position": [
+        [
+          -17,
+          26
+        ],
+        [
+          -6,
+          26
+        ]
+      ],
+      "length_pixels": 11,
+      "label_position": 8
+    },
+    {
+      "name": "L_3_23",
+      "from": "B3",
+      "to": "B23",
+      "position": [
+        [
+          -22,
+          8
+        ],
+        [
+          -22,
+          2
+        ]
+      ],
+      "length_pixels": 6,
+      "label_position": 2
+    },
+    {
+      "name": "L_23_24",
+      "from": "B23",
+      "to": "B24",
+      "position": [
+        [
+          -22,
+          2
+        ],
+        [
+          -22,
+          -7
+        ],
+        [
+          -20,
+          -7
+        ]
+      ],
+      "length_pixels": 11,
+      "label_position": 8
+    },
+    {
+      "name": "L_24_25",
+      "from": "B24",
+      "to": "B25",
+      "position": [
+        [
+          -20,
+          -7
+        ],
+        [
+          -20,
+          -18
+        ]
+      ],
+      "length_pixels": 11,
+      "label_position": 2
+    },
+    {
+      "name": "L_6_26",
+      "from": "B6",
+      "to": "B26",
+      "position": [
+        [
+          -1,
+          8
+        ],
+        [
+          -1,
+          5
+        ]
+      ],
+      "length_pixels": 3,
+      "label_position": 8
+    },
+    {
+      "name": "L_26_27",
+      "from": "B26",
+      "to": "B27",
+      "position": [
+        [
+          -1,
+          5
+        ],
+        [
+          -1,
+          1
+        ]
+      ],
+      "length_pixels": 4,
+      "label_position": 2
+    },
+    {
+      "name": "L_27_28",
+      "from": "B27",
+      "to": "B28",
+      "position": [
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          -10
+        ]
+      ],
+      "length_pixels": 14,
+      "label_position": 8
+    },
+    {
+      "name": "L_28_29",
+      "from": "B28",
+      "to": "B29",
+      "position": [
+        [
+          2,
+          -10
+        ],
+        [
+          2,
+          -18
+        ],
+        [
+          4,
+          -18
+        ]
+      ],
+      "length_pixels": 10,
+      "label_position": 2
+    },
+    {
+      "name": "L_29_30",
+      "from": "B29",
+      "to": "B30",
+      "position": [
+        [
+          4,
+          -18
+        ],
+        [
+          10,
+          -18
+        ]
+      ],
+      "length_pixels": 6,
+      "label_position": 8
+    },
+    {
+      "name": "L_30_31",
+      "from": "B30",
+      "to": "B31",
+      "position": [
+        [
+          10,
+          -18
+        ],
+        [
+          23,
+          -18
+        ]
+      ],
+      "length_pixels": 13,
+      "label_position": 2
+    },
+    {
+      "name": "L_31_32",
+      "from": "B31",
+      "to": "B32",
+      "position": [
+        [
+          23,
+          -18
+        ],
+        [
+          28,
+          -18
+        ]
+      ],
+      "length_pixels": 5,
+      "label_position": 8
+    },
+    {
+      "name": "L_32_33",
+      "from": "B32",
+      "to": "B33",
+      "position": [
+        [
+          28,
+          -18
+        ],
+        [
+          35,
+          -18
+        ]
+      ],
+      "length_pixels": 7,
+      "label_position": 2
+    },
+    {
+      "name": "TIE_8_21",
+      "from": "B8",
+      "to": "B21",
+      "position": [
+        [
+          14,
+          8
+        ],
+        [
+          14,
+          18
+        ],
+        [
+          -17,
+          18
+        ],
+        [
+          -17,
+          26
+        ]
+      ],
+      "length_pixels": 49,
+      "label_position": 4
+    },
+    {
+      "name": "TIE_9_15",
+      "from": "B9",
+      "to": "B15",
+      "position": [
+        [
+          26,
+          8
+        ],
+        [
+          28,
+          8
+        ],
+        [
+          28,
+          11
+        ],
+        [
+          44,
+          11
+        ]
+      ],
+      "length_pixels": 21,
+      "label_position": 6
+    },
+    {
+      "name": "TIE_12_22",
+      "from": "B12",
+      "to": "B22",
+      "position": [
+        [
+          26,
+          28
+        ],
+        [
+          26,
+          32
+        ],
+        [
+          -6,
+          32
+        ],
+        [
+          -6,
+          26
+        ]
+      ],
+      "length_pixels": 42,
+      "label_position": 4
+    },
+    {
+      "name": "TIE_18_33",
+      "from": "B18",
+      "to": "B33",
+      "position": [
+        [
+          53,
+          -18
+        ],
+        [
+          55,
+          -18
+        ],
+        [
+          55,
+          -20
+        ],
+        [
+          35,
+          -20
+        ],
+        [
+          35,
+          -18
+        ]
+      ],
+      "length_pixels": 26,
+      "label_position": 6
+    },
+    {
+      "name": "TIE_25_29",
+      "from": "B25",
+      "to": "B29",
+      "position": [
+        [
+          -20,
+          -18
+        ],
+        [
+          -20,
+          -20
+        ],
+        [
+          4,
+          -20
+        ],
+        [
+          4,
+          -18
+        ]
+      ],
+      "length_pixels": 28,
+      "label_position": 4
+    }
+  ]
+}

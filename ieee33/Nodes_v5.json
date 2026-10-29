@@ -1,0 +1,463 @@
+{
+  "Nodes": [
+    {
+      "name": "B1",
+      "position": [
+        -30,
+        8
+      ],
+      "label_position": 2,
+      "node_type": "transmission",
+      "always_inspected": true,
+      "fault_protected": true
+    },
+    {
+      "name": "B2",
+      "position": [
+        -28,
+        8
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        100,
+        60,
+        1.0
+      ]
+    },
+    {
+      "name": "B3",
+      "position": [
+        -22,
+        8
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        90,
+        40,
+        1.0
+      ]
+    },
+    {
+      "name": "B4",
+      "position": [
+        -17,
+        8
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        120,
+        80,
+        1.0
+      ]
+    },
+    {
+      "name": "B5",
+      "position": [
+        -12,
+        8
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        30,
+        1.0
+      ]
+    },
+    {
+      "name": "B6",
+      "position": [
+        -1,
+        8
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        60,
+        20,
+        1.0
+      ]
+    },
+    {
+      "name": "B7",
+      "position": [
+        6,
+        8
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        200,
+        100,
+        1.0
+      ]
+    },
+    {
+      "name": "B8",
+      "position": [
+        14,
+        8
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        200,
+        100,
+        5.0
+      ]
+    },
+    {
+      "name": "B9",
+      "position": [
+        26,
+        8
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        20,
+        1.0
+      ]
+    },
+    {
+      "name": "B10",
+      "position": [
+        26,
+        20
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        60,
+        20,
+        1.0
+      ]
+    },
+    {
+      "name": "B11",
+      "position": [
+        26,
+        23
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        45,
+        30,
+        1.0
+      ]
+    },
+    {
+      "name": "B12",
+      "position": [
+        26,
+        28
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        60,
+        35,
+        1.0
+      ]
+    },
+    {
+      "name": "B13",
+      "position": [
+        44,
+        28
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        35,
+        1.0
+      ]
+    },
+    {
+      "name": "B14",
+      "position": [
+        44,
+        19
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        120,
+        80,
+        1.0
+      ]
+    },
+    {
+      "name": "B15",
+      "position": [
+        44,
+        11
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        10,
+        1.0
+      ]
+    },
+    {
+      "name": "B16",
+      "position": [
+        44,
+        2
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        60,
+        20,
+        1.0
+      ]
+    },
+    {
+      "name": "B17",
+      "position": [
+        44,
+        -18
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        20,
+        1.0
+      ]
+    },
+    {
+      "name": "B18",
+      "position": [
+        53,
+        -18
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        90,
+        40,
+        1.0
+      ]
+    },
+    {
+      "name": "B19",
+      "position": [
+        -28,
+        11
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        90,
+        40,
+        1.0
+      ]
+    },
+    {
+      "name": "B20",
+      "position": [
+        -24,
+        26
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        90,
+        40,
+        1.0
+      ]
+    },
+    {
+      "name": "B21",
+      "position": [
+        -17,
+        26
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        90,
+        40,
+        1.0
+      ]
+    },
+    {
+      "name": "B22",
+      "position": [
+        -6,
+        26
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        90,
+        40,
+        1.0
+      ]
+    },
+    {
+      "name": "B23",
+      "position": [
+        -22,
+        2
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        90,
+        50,
+        1.0
+      ]
+    },
+    {
+      "name": "B24",
+      "position": [
+        -20,
+        -7
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        420,
+        200,
+        5.0
+      ]
+    },
+    {
+      "name": "B25",
+      "position": [
+        -20,
+        -18
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        420,
+        200,
+        1.0
+      ]
+    },
+    {
+      "name": "B26",
+      "position": [
+        -1,
+        5
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        60,
+        25,
+        1.0
+      ]
+    },
+    {
+      "name": "B27",
+      "position": [
+        -1,
+        1
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        25,
+        1.0
+      ]
+    },
+    {
+      "name": "B28",
+      "position": [
+        2,
+        -10
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        60,
+        20,
+        1.0
+      ]
+    },
+    {
+      "name": "B29",
+      "position": [
+        4,
+        -18
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        120,
+        70,
+        1.0
+      ]
+    },
+    {
+      "name": "B30",
+      "position": [
+        10,
+        -18
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        200,
+        600,
+        5.0
+      ]
+    },
+    {
+      "name": "B31",
+      "position": [
+        23,
+        -18
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        150,
+        70,
+        1.0
+      ]
+    },
+    {
+      "name": "B32",
+      "position": [
+        28,
+        -18
+      ],
+      "label_position": 8,
+      "node_type": "distribution",
+      "load": [
+        210,
+        100,
+        1.0
+      ]
+    },
+    {
+      "name": "B33",
+      "position": [
+        35,
+        -18
+      ],
+      "label_position": 2,
+      "node_type": "distribution",
+      "load": [
+        60,
+        40,
+        1.0
+      ]
+    }
+  ]
+}
